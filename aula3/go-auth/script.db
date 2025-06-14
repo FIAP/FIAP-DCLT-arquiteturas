@@ -1,0 +1,22 @@
+db.users.insertMany([
+    {
+        "username": "admin",
+        "password": "admin123",
+        "role": "ADM"
+    },
+    {
+        "username": "professor",
+        "password": "professor123",
+        "role": "Professor"
+    },
+    {
+        "username": "candidato",
+        "password": "candidato123",
+        "role": "candidato"
+    },
+    {
+        "username": "empresa",
+        "password": "empresa123",
+        "role": "Empresa"
+    }
+])

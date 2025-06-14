@@ -1,0 +1,19 @@
+### Login Request (to generate a JWT token)
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+
+### Login Request (to generate a JWT token)
+POST http://localhost:8080/login
+Content-Type: application/json
+
+{
+  "username": "candidato",
+  "password": "candidato123"
+}
+

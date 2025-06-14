@@ -1,0 +1,71 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{8706D285-E00E-4398-8608-D4E6C8CBE98B}|Professor\\API.csproj|c:\\users\\thiagoadriano\\documents\\dclt\\aula3\\professor\\professor\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{8706D285-E00E-4398-8608-D4E6C8CBE98B}|Professor\\API.csproj|solutionrelative:professor\\appsettings.development.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E00A1E7-BC2D-4532-8C51-984D9468A555}|Infrastructure\\Infrastructure.csproj|c:\\users\\thiagoadriano\\documents\\dclt\\aula3\\professor\\infrastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E00A1E7-BC2D-4532-8C51-984D9468A555}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{6E00A1E7-BC2D-4532-8C51-984D9468A555}|Infrastructure\\Infrastructure.csproj|c:\\users\\thiagoadriano\\documents\\dclt\\aula3\\professor\\infrastructure\\repositories\\repository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6E00A1E7-BC2D-4532-8C51-984D9468A555}|Infrastructure\\Infrastructure.csproj|solutionrelative:infrastructure\\repositories\\repository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "appsettings.Development.json",
+              "DocumentMoniker": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Professor\\appsettings.Development.json",
+              "RelativeDocumentMoniker": "Professor\\appsettings.Development.json",
+              "ToolTip": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Professor\\appsettings.Development.json",
+              "RelativeToolTip": "Professor\\appsettings.Development.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-06-14T20:08:34.196Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AppDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Infrastructure\\Data\\AppDbContext.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Data\\AppDbContext.cs",
+              "ToolTip": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Infrastructure\\Data\\AppDbContext.cs",
+              "RelativeToolTip": "Infrastructure\\Data\\AppDbContext.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-14T20:08:26.512Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Repository.cs",
+              "DocumentMoniker": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Infrastructure\\Repositories\\Repository.cs",
+              "RelativeDocumentMoniker": "Infrastructure\\Repositories\\Repository.cs",
+              "ToolTip": "C:\\Users\\thiagoadriano\\Documents\\DCLT\\AULA3\\Professor\\Infrastructure\\Repositories\\Repository.cs",
+              "RelativeToolTip": "Infrastructure\\Repositories\\Repository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-06-14T20:08:21.505Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
