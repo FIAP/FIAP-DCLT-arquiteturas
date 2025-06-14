@@ -1,0 +1,15 @@
+<%- include('header') %>
+<h2>Login</h2>
+<% if (typeof error !== 'undefined') { %>
+  <div class="error"><%= error %></div>
+<% } %>
+<form action="/login" method="POST">
+  <label for="userName">Usuário:</label>
+  <input type="text" id="userName" name="userName" required>
+  <br>
+  <label for="password">Senha:</label>
+  <input type="password" id="password" name="password" required>
+  <br>
+  <button type="submit">Entrar</button>
+</form>
+<%- include('footer') %> 

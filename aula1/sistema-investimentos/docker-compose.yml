@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  # Banco de Dados PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: investimentos_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sistema_investimentos
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - investimentos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d sistema_investimentos"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Aplicação Node.js
+  app:
+    build: .
+    container_name: investimentos_app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: sistema_investimentos
+      DB_USER: admin
+      DB_PASSWORD: admin123
+      JWT_SECRET: seu_jwt_secret_super_secreto_aqui
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - investimentos_network
+    command: npm run dev
+
+  # Adminer para gerenciar banco (opcional)
+  adminer:
+    image: adminer:latest
+    container_name: investimentos_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    networks:
+      - investimentos_network
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  investimentos_network:
+    driver: bridge 

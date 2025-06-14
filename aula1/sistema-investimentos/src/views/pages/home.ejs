@@ -1,0 +1,277 @@
+<%- include('../layout/base', { body: `
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-chart-line me-3"></i>
+                        Sistema de Investimentos
+                    </h1>
+                    <p class="lead mb-4">
+                        Plataforma completa para gerenciamento de investimentos, análise de portfólio 
+                        e acompanhamento do mercado financeiro em tempo real.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="/dashboard" class="btn btn-light btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Acessar Dashboard
+                        </a>
+                        <a href="/api-docs" target="_blank" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-book me-2"></i>
+                            Documentação API
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <div class="mt-4 mt-lg-0">
+                        <i class="fas fa-chart-line" style="font-size: 8rem; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Cards -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-server text-success mb-2" style="font-size: 2rem;"></i>
+                        <h5 class="mb-0">Sistema Online</h5>
+                        <small class="text-muted" id="uptime">Carregando...</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-database text-info mb-2" style="font-size: 2rem;"></i>
+                        <h5 class="mb-0">Banco Conectado</h5>
+                        <small class="text-muted">PostgreSQL</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-code text-warning mb-2" style="font-size: 2rem;"></i>
+                        <h5 class="mb-0">API v1.0.0</h5>
+                        <small class="text-muted">19 Endpoints</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card">
+                        <i class="fas fa-shield-alt text-success mb-2" style="font-size: 2rem;"></i>
+                        <h5 class="mb-0">Segurança JWT</h5>
+                        <small class="text-muted">Ativa</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-white">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold">Funcionalidades do Sistema</h2>
+                <p class="text-muted">Tudo que você precisa para gerenciar seus investimentos</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-lg-4 text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h4>Gestão de Portfólio</h4>
+                    <p class="text-muted">
+                        Acompanhe seus investimentos, calcule rentabilidade e 
+                        analise a diversificação do seu portfólio.
+                    </p>
+                    <a href="/portfolio" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-right me-1"></i> Acessar
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <h4>Catálogo de Ativos</h4>
+                    <p class="text-muted">
+                        Explore ações, FIIs, criptomoedas e renda fixa com 
+                        dados atualizados e análises de mercado.
+                    </p>
+                    <a href="/assets" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-right me-1"></i> Explorar
+                    </a>
+                </div>
+                
+                <div class="col-lg-4 text-center">
+                    <div class="feature-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <h4>Transações</h4>
+                    <p class="text-muted">
+                        Execute compras e vendas, acompanhe histórico e 
+                        analise estatísticas das suas operações.
+                    </p>
+                    <a href="/transactions" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-right me-1"></i> Ver Transações
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- API Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h3 class="fw-bold mb-4">API RESTful Completa</h3>
+                    <p class="mb-4">
+                        Nossa API oferece todos os recursos necessários para integração 
+                        com sistemas externos, desenvolvimento de aplicações mobile ou 
+                        automação de investimentos.
+                    </p>
+                    
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Autenticação JWT</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Documentação Swagger</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Rate Limiting</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-check-circle text-success me-2"></i>
+                                <span>Validação de Dados</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="/api-docs" target="_blank" class="btn btn-primary btn-lg">
+                        <i class="fas fa-external-link-alt me-2"></i>
+                        Explorar API
+                    </a>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <i class="fas fa-terminal me-2"></i>
+                            Exemplo de Uso
+                        </div>
+                        <div class="card-body">
+                            <pre><code class="text-muted">
+# Login
+POST /api/v1/auth/login
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}
+
+# Listar ativos
+GET /api/v1/assets?type=acao&limit=10
+
+# Executar compra
+POST /api/v1/transactions/buy
+{
+  "asset_id": 1,
+  "quantity": 100,
+  "price": 25.50
+}
+                            </code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h3 class="fw-bold">Começar Agora</h3>
+                <p class="text-muted">Siga estes passos para começar a usar o sistema</p>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <strong>1</strong>
+                            </div>
+                            <h5>Registre-se</h5>
+                            <p class="text-muted">Crie sua conta no sistema com email e CPF</p>
+                            <a href="/register" class="btn btn-outline-primary">
+                                <i class="fas fa-user-plus me-1"></i> Cadastrar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <strong>2</strong>
+                            </div>
+                            <h5>Explore Ativos</h5>
+                            <p class="text-muted">Navegue pelo catálogo de investimentos disponíveis</p>
+                            <a href="/assets" class="btn btn-outline-success">
+                                <i class="fas fa-search me-1"></i> Explorar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card h-100 text-center">
+                        <div class="card-body">
+                            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <strong>3</strong>
+                            </div>
+                            <h5>Invista</h5>
+                            <p class="text-muted">Execute suas primeiras transações e monte seu portfólio</p>
+                            <a href="/dashboard" class="btn btn-outline-warning">
+                                <i class="fas fa-chart-line me-1"></i> Investir
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Carregar status do sistema
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                if (data.status === 'OK') {
+                    const uptime = Math.floor(data.uptime / 3600);
+                    document.getElementById('uptime').textContent = uptime + 'h de atividade';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar status:', error);
+                document.getElementById('uptime').textContent = 'Status indisponível';
+            }
+        });
+    </script>
+` }) %> 

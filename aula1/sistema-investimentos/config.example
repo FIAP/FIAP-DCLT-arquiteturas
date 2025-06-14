@@ -1,0 +1,25 @@
+# Configurações do Servidor
+NODE_ENV=development
+PORT=3000
+
+# Configurações do Banco de Dados
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=sistema_investimentos
+DB_USER=admin
+DB_PASSWORD=admin123
+
+# Configurações de Segurança
+JWT_SECRET=seu_jwt_secret_super_secreto_aqui_mude_em_producao
+JWT_EXPIRES_IN=24h
+
+# Configurações da API
+API_VERSION=v1
+API_BASE_URL=/api/v1
+
+# Configurações de Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Configurações de Log
+LOG_LEVEL=info 

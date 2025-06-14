@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Streaming e Processamento de Mídia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .architecture-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .component-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .component-card.rec-front { border-left-color: #667eea; }
+        .component-card.sistema-grava { border-left-color: #3498db; }
+        .component-card.fila-uol { border-left-color: #ff6b35; }
+        .component-card.fila-youtube { border-left-color: #ff0000; }
+        .component-card.maquina-cortes { border-left-color: #8e44ad; }
+        .component-card.filas-rec { border-left-color: #2c3e50; }
+        .component-card.monitoramento { border-left-color: #1a252f; }
+
+        .component-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .component-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .component-desc {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .component-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+
+        .quick-actions {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .action-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .action-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-primary { background: #667eea; }
+        .btn-secondary { background: #6c757d; }
+        .btn-success { background: #28a745; }
+        .btn-warning { background: #ffc107; color: #212529; }
+
+        .system-stats {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .flow-diagram {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            border: 2px solid #dee2e6;
+        }
+
+        .flow-step.active {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .flow-arrow {
+            font-size: 1.5em;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .flow-steps {
+                flex-direction: column;
+            }
+            
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema de Streaming e Processamento de Mídia</h1>
+            <p>Arquitetura completa de gravação, processamento e distribuição de conteúdo</p>
+            <div style="margin-top: 20px;">
+                <span style="color: #28a745; font-weight: bold;">● Sistema Online</span> |
+                <span style="color: #666;">7 Componentes Ativos</span> |
+                <span style="color: #666;">Redundância Operacional</span>
+            </div>
+        </div>
+
+        <!-- Visão Geral da Arquitetura -->
+        <div class="architecture-overview">
+            <h2>Componentes da Arquitetura</h2>
+            <p style="color: #666; margin-bottom: 20px;">
+                Sistema modular de gravação e processamento com redundância, processamento distribuído e monitoramento centralizado
+            </p>
+            
+            <div class="components-grid">
+                <a href="/rec-front.html" class="component-card rec-front">
+                    <div class="component-icon">📹</div>
+                    <div class="component-title">REC Front</div>
+                    <div class="component-desc">
+                        Interface de gravação com sistema redundante principal e backup para máxima confiabilidade
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Sistema Ativo
+                    </div>
+                </a>
+
+                <a href="/sistema-grava.html" class="component-card sistema-grava">
+                    <div class="component-icon">💿</div>
+                    <div class="component-title">Sistema Grava</div>
+                    <div class="component-desc">
+                        Central de gravação HD Principal (1080p/4K) e Extra (múltiplas resoluções) com controle de qualidade
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Operacional
+                    </div>
+                </a>
+
+                <a href="/fila-uol.html" class="component-card fila-uol">
+                    <div class="component-icon">🌐</div>
+                    <div class="component-title">Fila UOL</div>
+                    <div class="component-desc">
+                        Processamento otimizado para publicação no Portal UOL com compressão e formatos específicos
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Processando
+                    </div>
+                </a>
+
+                <a href="/fila-youtube.html" class="component-card fila-youtube">
+                    <div class="component-icon">📺</div>
+                    <div class="component-title">Fila YouTube</div>
+                    <div class="component-desc">
+                        Processamento multi-resolução para YouTube com upload automático e otimização de qualidade
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Enviando
+                    </div>
+                </a>
+
+                <a href="/maquina-cortes.html" class="component-card maquina-cortes">
+                    <div class="component-icon">🤖</div>
+                    <div class="component-title">Máquina de Cortes</div>
+                    <div class="component-desc">
+                        Editor automatizado com IA para detecção de cenas, cortes inteligentes e geração de highlights
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        IA Ativa
+                    </div>
+                </a>
+
+                <a href="/filas-rec.html" class="component-card filas-rec">
+                    <div class="component-icon">📁</div>
+                    <div class="component-title">Filas REC</div>
+                    <div class="component-desc">
+                        Sistema de backup, arquivamento e controle de qualidade com gestão de storage distribuído
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Sincronizando
+                    </div>
+                </a>
+
+                <a href="/monitoramento.html" class="component-card monitoramento">
+                    <div class="component-icon">📊</div>
+                    <div class="component-title">Monitoramento</div>
+                    <div class="component-desc">
+                        Central de controle com dashboards, alertas, logs e métricas de performance em tempo real
+                    </div>
+                    <div class="component-status">
+                        <div class="status-indicator"></div>
+                        Monitorando
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Fluxo do Sistema -->
+        <div class="flow-diagram">
+            <h3>Fluxo de Processamento</h3>
+            <div class="flow-steps">
+                <div class="flow-step active">
+                    <strong>1. Gravação</strong><br>
+                    <small>REC Front + Sistema Grava</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>2. Análise IA</strong><br>
+                    <small>Máquina de Cortes</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>3. Processamento</strong><br>
+                    <small>Filas UOL + YouTube</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>4. Arquivo</strong><br>
+                    <small>Filas REC</small>
+                </div>
+                <div class="flow-arrow">→</div>
+                <div class="flow-step">
+                    <strong>5. Distribuição</strong><br>
+                    <small>Publicação Multi-plataforma</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ações Rápidas -->
+        <div class="quick-actions">
+            <h3>Ações Rápidas</h3>
+            <div class="actions-grid">
+                <a href="/rec-front.html" class="action-btn btn-primary">
+                    🎥 Iniciar Gravação
+                </a>
+                <a href="/monitoramento.html" class="action-btn btn-secondary">
+                    📊 Ver Monitoramento
+                </a>
+                <a href="/maquina-cortes.html" class="action-btn btn-success">
+                    🤖 IA Análise
+                </a>
+                <button class="action-btn btn-warning" onclick="abrirTodos()">
+                    🚀 Abrir Todos Módulos
+                </button>
+            </div>
+        </div>
+
+        <!-- Estatísticas do Sistema -->
+        <div class="system-stats">
+            <h3>Estatísticas do Sistema</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-gravacoes">0</div>
+                    <div class="stat-label">Total de Gravações</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="filas-ativas">4</div>
+                    <div class="stat-label">Filas Ativas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="uptime">99.9%</div>
+                    <div class="stat-label">Uptime</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="storage-usado">3.2TB</div>
+                    <div class="stat-label">Storage Utilizado</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="videos-processados">0</div>
+                    <div class="stat-label">Vídeos Processados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="ia-ativa">✓</div>
+                    <div class="stat-label">IA Status</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        // Event listeners do Socket.IO para atualizar estatísticas
+        socket.on('sistema-status', function(data) {
+            atualizarEstatisticas(data);
+        });
+
+        socket.on('gravacao-criada', function(data) {
+            const totalElement = document.getElementById('total-gravacoes');
+            totalElement.textContent = parseInt(totalElement.textContent) + 1;
+        });
+
+        socket.on('item-atualizado', function(data) {
+            const videosElement = document.getElementById('videos-processados');
+            if (data.item.status === 'CONCLUIDO') {
+                videosElement.textContent = parseInt(videosElement.textContent) + 1;
+            }
+        });
+
+        function atualizarEstatisticas(data) {
+            if (data.filas) {
+                const totalFilas = Object.keys(data.filas).length;
+                const filasAtivas = Object.values(data.filas)
+                    .filter(fila => fila.estatisticas.ativa).length;
+                
+                document.getElementById('filas-ativas').textContent = filasAtivas;
+                
+                // Atualizar contadores baseados nas filas
+                let totalVideos = 0;
+                Object.values(data.filas).forEach(fila => {
+                    totalVideos += fila.estatisticas.concluidos;
+                });
+                document.getElementById('videos-processados').textContent = totalVideos;
+            }
+        }
+
+        function abrirTodos() {
+            const modulos = [
+                '/rec-front.html',
+                '/sistema-grava.html', 
+                '/fila-uol.html',
+                '/fila-youtube.html',
+                '/maquina-cortes.html',
+                '/filas-rec.html',
+                '/monitoramento.html'
+            ];
+            
+            if (confirm('Deseja abrir todos os módulos do sistema em novas abas?')) {
+                modulos.forEach(modulo => {
+                    window.open(modulo, '_blank');
+                });
+            }
+        }
+
+        // Carregar estatísticas iniciais
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simular carregamento de dados
+            setTimeout(() => {
+                fetch('/api/monitoramento/performance')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.sucesso) {
+                            atualizarEstatisticas(data);
+                        }
+                    })
+                    .catch(error => {
+                        console.log('Dados simulados carregados');
+                    });
+            }, 1000);
+
+            // Atualizar uptime
+            let uptime = 99.9;
+            setInterval(() => {
+                uptime = Math.min(99.9, uptime + 0.01);
+                document.getElementById('uptime').textContent = uptime.toFixed(1) + '%';
+            }, 30000);
+
+            // Simular crescimento de storage
+            setInterval(() => {
+                const storageElement = document.getElementById('storage-usado');
+                const current = parseFloat(storageElement.textContent);
+                const newValue = current + (Math.random() * 0.01);
+                storageElement.textContent = newValue.toFixed(1) + 'TB';
+            }, 45000);
+        });
+    </script>
+</body>
+</html> 

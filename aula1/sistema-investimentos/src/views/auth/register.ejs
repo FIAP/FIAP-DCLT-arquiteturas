@@ -1,0 +1,79 @@
+<%- include('../layout/base', { body: `
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-plus fa-3x text-primary mb-3"></i>
+                        <h2 class="fw-bold">Criar Conta</h2>
+                        <p class="text-muted">Junte-se ao sistema monolítico de investimentos</p>
+                    </div>
+                    
+                    <form action="/api/v1/auth/register" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Senha</label>
+                                <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="risk_profile" class="form-label">Perfil de Risco</label>
+                                <select class="form-select" id="risk_profile" name="risk_profile" required>
+                                    <option value="">Selecionar</option>
+                                    <option value="conservador">Conservador</option>
+                                    <option value="moderado">Moderado</option>
+                                    <option value="arrojado">Arrojado</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    Concordo com os termos de uso do sistema educacional
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-rocket me-2"></i>Criar Conta
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-center">
+                        <p class="mb-0">Já tem uma conta?</p>
+                        <a href="/login" class="btn btn-outline-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Fazer Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <div class="alert alert-info">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    <strong>Sistema Educacional:</strong> Este é um projeto monolítico da FIAP para demonstrar conceitos de arquitetura de software.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+` }) %> 

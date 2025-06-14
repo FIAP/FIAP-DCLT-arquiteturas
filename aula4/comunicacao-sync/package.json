@@ -1,0 +1,18 @@
+{
+  "name": "comunicacao-sync-exemplo",
+  "version": "1.0.0",
+  "description": "Exemplo simples de comunicação síncrona entre aplicações",
+  "main": "servidor.js",
+  "scripts": {
+    "servidor": "node servidor.js",
+    "cliente": "node cliente.js",
+    "start": "node servidor.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  },
+  "keywords": ["api", "rest", "sincrono", "exemplo"],
+  "author": "",
+  "license": "MIT"
+} 

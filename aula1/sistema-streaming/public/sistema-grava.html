@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Grava - Central de Gravação</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu a {
+            color: #2c3e50;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .grava-systems {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .grava-unit {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .grava-unit.hd-principal {
+            border-left: 5px solid #e74c3c;
+        }
+
+        .grava-unit.extra {
+            border-left: 5px solid #f39c12;
+        }
+
+        .unit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .unit-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .unit-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .status-available {
+            background: #d5f4e6;
+            color: #27ae60;
+        }
+
+        .status-recording {
+            background: #faddd7;
+            color: #e74c3c;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #f39c12;
+        }
+
+        .recording-config {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+
+        .config-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .config-value {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        .storage-info {
+            background: #e3f2fd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .storage-header {
+            font-weight: bold;
+            color: #1565c0;
+            margin-bottom: 15px;
+        }
+
+        .storage-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .storage-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4caf50 0%, #81c784 100%);
+            transition: width 0.3s ease;
+        }
+
+        .storage-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .active-recordings {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .recording-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #007bff;
+        }
+
+        .recording-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .recording-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .system-overview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .overview-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .overview-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .overview-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .grava-systems {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recording-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Sistema Grava - Central de Gravação</h1>
+            <p>Gerenciamento centralizado de gravação HD Principal e Extra</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="/rec-front.html">REC Front</a>
+            <a href="/sistema-grava.html" class="active">Sistema Grava</a>
+            <a href="/fila-uol.html">Fila UOL</a>
+            <a href="/fila-youtube.html">Fila YouTube</a>
+            <a href="/maquina-cortes.html">Máquina Cortes</a>
+            <a href="/filas-rec.html">Filas REC</a>
+            <a href="/monitoramento.html">Monitoramento</a>
+        </div>
+
+        <!-- Sistemas de Gravação -->
+        <div class="grava-systems">
+            <!-- HD Principal -->
+            <div class="grava-unit hd-principal">
+                <div class="unit-header">
+                    <div class="unit-title">Grava HD Principal</div>
+                    <div id="status-hd" class="unit-status status-available">Disponível</div>
+                </div>
+
+                <div class="recording-config">
+                    <h4>Configuração de Broadcast</h4>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <span class="config-label">Resolução:</span>
+                            <span class="config-value">1080p</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Frame Rate:</span>
+                            <span class="config-value">60 FPS</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Bitrate:</span>
+                            <span class="config-value">50 Mbps</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Codec:</span>
+                            <span class="config-value">H.264</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Áudio:</span>
+                            <span class="config-value">PCM 48kHz</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Formato:</span>
+                            <span class="config-value">MOV/MP4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="storage-info">
+                    <div class="storage-header">Armazenamento HD Principal</div>
+                    <div class="storage-bar">
+                        <div class="storage-fill" style="width: 35%"></div>
+                    </div>
+                    <div class="storage-details">
+                        <span>1.2 TB usado</span>
+                        <span>2.3 TB livre</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extra -->
+            <div class="grava-unit extra">
+                <div class="unit-header">
+                    <div class="unit-title">Grava Extra</div>
+                    <div id="status-extra" class="unit-status status-available">Disponível</div>
+                </div>
+
+                <div class="recording-config">
+                    <h4>Configuração Adicional</h4>
+                    <div class="config-grid">
+                        <div class="config-item">
+                            <span class="config-label">Resolução:</span>
+                            <span class="config-value">720p</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Frame Rate:</span>
+                            <span class="config-value">30 FPS</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Bitrate:</span>
+                            <span class="config-value">25 Mbps</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Codec:</span>
+                            <span class="config-value">H.264</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Áudio:</span>
+                            <span class="config-value">AAC 44.1kHz</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Formato:</span>
+                            <span class="config-value">MP4</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="storage-info">
+                    <div class="storage-header">Armazenamento Extra</div>
+                    <div class="storage-bar">
+                        <div class="storage-fill" style="width: 58%"></div>
+                    </div>
+                    <div class="storage-details">
+                        <span>1.7 TB usado</span>
+                        <span>1.2 TB livre</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gravações Ativas -->
+        <div class="active-recordings">
+            <h3>Gravações Ativas</h3>
+            <div id="gravacoes-ativas">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    Nenhuma gravação ativa no momento
+                </div>
+            </div>
+        </div>
+
+        <!-- Visão Geral do Sistema -->
+        <div class="system-overview">
+            <h3>Visão Geral do Sistema</h3>
+            <div class="overview-grid">
+                <div class="overview-card">
+                    <div class="overview-number" id="total-gravacoes">0</div>
+                    <div class="overview-label">Total de Gravações</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number" id="gravacoes-hoje">0</div>
+                    <div class="overview-label">Gravações Hoje</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number" id="tempo-total">0h</div>
+                    <div class="overview-label">Tempo Total Gravado</div>
+                </div>
+                <div class="overview-card">
+                    <div class="overview-number" id="tamanho-total">0 GB</div>
+                    <div class="overview-label">Espaço Utilizado</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        let gravacoes = [];
+        let metricas = {
+            totalGravacoes: 0,
+            gravacoesHoje: 0,
+            tempoTotal: 0,
+            tamanhoTotal: 0
+        };
+
+        // Event listeners do Socket.IO
+        socket.on('gravacao-criada', function(data) {
+            adicionarGravacaoAtiva(data);
+            atualizarMetricas();
+        });
+
+        socket.on('gravacao-iniciada', function(data) {
+            atualizarStatusGravacao(data, 'recording');
+            atualizarMetricas();
+        });
+
+        socket.on('gravacao-pausada', function(data) {
+            atualizarStatusGravacao(data, 'paused');
+        });
+
+        socket.on('gravacao-finalizada', function(data) {
+            atualizarStatusGravacao(data, 'finished');
+            atualizarMetricas();
+            
+            // Remover da lista de ativas após 5 segundos
+            setTimeout(() => {
+                removerGravacaoAtiva(data.id);
+            }, 5000);
+        });
+
+        function adicionarGravacaoAtiva(gravacao) {
+            gravacoes.push(gravacao);
+            atualizarListaGravacoes();
+            
+            // Atualizar status do sistema correspondente
+            const sistema = gravacao.tipo === 'HD_PRINCIPAL' ? 'hd' : 'extra';
+            document.getElementById(`status-${sistema}`).className = 'unit-status status-recording';
+            document.getElementById(`status-${sistema}`).textContent = 'Gravando';
+        }
+
+        function removerGravacaoAtiva(id) {
+            gravacoes = gravacoes.filter(g => g.id !== id);
+            atualizarListaGravacoes();
+            
+            // Se não há mais gravações, voltar status para disponível
+            if (gravacoes.length === 0) {
+                document.getElementById('status-hd').className = 'unit-status status-available';
+                document.getElementById('status-hd').textContent = 'Disponível';
+                document.getElementById('status-extra').className = 'unit-status status-available';
+                document.getElementById('status-extra').textContent = 'Disponível';
+            }
+        }
+
+        function atualizarStatusGravacao(gravacao, status) {
+            const gravacaoIndex = gravacoes.findIndex(g => g.id === gravacao.id);
+            if (gravacaoIndex !== -1) {
+                gravacoes[gravacaoIndex] = { ...gravacoes[gravacaoIndex], ...gravacao, status };
+                atualizarListaGravacoes();
+            }
+        }
+
+        function atualizarListaGravacoes() {
+            const container = document.getElementById('gravacoes-ativas');
+            
+            if (gravacoes.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        Nenhuma gravação ativa no momento
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            gravacoes.forEach(gravacao => {
+                const statusConfig = {
+                    'recording': { color: '#e74c3c', text: 'Gravando', action: 'pausar' },
+                    'paused': { color: '#f39c12', text: 'Pausada', action: 'continuar' },
+                    'finished': { color: '#27ae60', text: 'Finalizada', action: 'processar' }
+                };
+
+                const config = statusConfig[gravacao.status] || statusConfig['recording'];
+                
+                html += `
+                    <div class="recording-item">
+                        <div class="recording-header">
+                            <div>
+                                <div class="recording-title">${gravacao.titulo}</div>
+                                <div style="color: #666; font-size: 14px;">
+                                    ${gravacao.tipo} - ${gravacao.qualidade}
+                                    <span style="color: ${config.color}; font-weight: bold; margin-left: 10px;">
+                                        ● ${config.text}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="recording-actions">
+                                ${gravacao.status === 'recording' ? `
+                                    <button class="btn btn-warning" onclick="pausarGravacao('${gravacao.id}')">
+                                        Pausar
+                                    </button>
+                                    <button class="btn btn-danger" onclick="pararGravacao('${gravacao.id}')">
+                                        Parar
+                                    </button>
+                                ` : ''}
+                                ${gravacao.status === 'paused' ? `
+                                    <button class="btn btn-success" onclick="continuarGravacao('${gravacao.id}')">
+                                        Continuar
+                                    </button>
+                                    <button class="btn btn-danger" onclick="pararGravacao('${gravacao.id}')">
+                                        Parar
+                                    </button>
+                                ` : ''}
+                                ${gravacao.status === 'finished' ? `
+                                    <button class="btn btn-primary" onclick="enviarParaProcessamento('${gravacao.id}')">
+                                        Processar
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        
+                        <div class="recording-metrics">
+                            <div class="metric">
+                                <div class="metric-value" id="tempo-${gravacao.id}">00:00:00</div>
+                                <div class="metric-label">Duração</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="tamanho-${gravacao.id}">0 MB</div>
+                                <div class="metric-label">Tamanho</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">${gravacao.qualidade}</div>
+                                <div class="metric-label">Qualidade</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="fps-${gravacao.id}">60</div>
+                                <div class="metric-label">FPS</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            // Iniciar timers para gravações ativas
+            gravacoes.forEach(gravacao => {
+                if (gravacao.status === 'recording') {
+                    iniciarTimer(gravacao.id);
+                    simularMetricas(gravacao.id);
+                }
+            });
+        }
+
+        function iniciarTimer(gravacaoId) {
+            let segundos = 0;
+            const interval = setInterval(() => {
+                const gravacao = gravacoes.find(g => g.id === gravacaoId);
+                if (!gravacao || gravacao.status !== 'recording') {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                segundos++;
+                const horas = Math.floor(segundos / 3600);
+                const mins = Math.floor((segundos % 3600) / 60);
+                const secs = segundos % 60;
+                
+                const timeString = `${horas.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                const timerElement = document.getElementById(`tempo-${gravacaoId}`);
+                if (timerElement) {
+                    timerElement.textContent = timeString;
+                }
+            }, 1000);
+        }
+
+        function simularMetricas(gravacaoId) {
+            const interval = setInterval(() => {
+                const gravacao = gravacoes.find(g => g.id === gravacaoId);
+                if (!gravacao || gravacao.status !== 'recording') {
+                    clearInterval(interval);
+                    return;
+                }
+                
+                // Simular crescimento do arquivo
+                const tamanhoElement = document.getElementById(`tamanho-${gravacaoId}`);
+                if (tamanhoElement) {
+                    const tamanhoAtual = parseInt(tamanhoElement.textContent) || 0;
+                    const incremento = Math.floor(Math.random() * 50) + 30;
+                    tamanhoElement.textContent = `${tamanhoAtual + incremento} MB`;
+                }
+                
+                // Simular FPS
+                const fpsElement = document.getElementById(`fps-${gravacaoId}`);
+                if (fpsElement) {
+                    const fps = gravacao.tipo === 'HD_PRINCIPAL' ? 
+                        (59 + Math.random() * 2) : (29 + Math.random() * 2);
+                    fpsElement.textContent = fps.toFixed(1);
+                }
+            }, 3000);
+        }
+
+        async function pausarGravacao(id) {
+            try {
+                const response = await fetch(`/api/gravacao/${id}/pausar`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    atualizarStatusGravacao(data.gravacao, 'paused');
+                }
+            } catch (error) {
+                console.error('Erro ao pausar gravação:', error);
+            }
+        }
+
+        async function continuarGravacao(id) {
+            try {
+                const response = await fetch(`/api/gravacao/${id}/iniciar`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    atualizarStatusGravacao(data.gravacao, 'recording');
+                }
+            } catch (error) {
+                console.error('Erro ao continuar gravação:', error);
+            }
+        }
+
+        async function pararGravacao(id) {
+            try {
+                const response = await fetch(`/api/gravacao/${id}/parar`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    atualizarStatusGravacao(data.gravacao, 'finished');
+                }
+            } catch (error) {
+                console.error('Erro ao parar gravação:', error);
+            }
+        }
+
+        async function enviarParaProcessamento(id) {
+            try {
+                const response = await fetch(`/api/gravacao/${id}/processar`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        plataformas: ['UOL', 'YOUTUBE', 'REC']
+                    })
+                });
+                
+                if (response.ok) {
+                    alert('Gravação enviada para processamento!');
+                    removerGravacaoAtiva(id);
+                }
+            } catch (error) {
+                console.error('Erro ao enviar para processamento:', error);
+            }
+        }
+
+        async function atualizarMetricas() {
+            try {
+                const response = await fetch('/api/gravacao');
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    const gravacoes = data.gravacoes;
+                    
+                    // Calcular métricas
+                    const hoje = new Date().toDateString();
+                    const gravacoesHoje = gravacoes.filter(g => 
+                        new Date(g.dataInicio).toDateString() === hoje
+                    ).length;
+                    
+                    const tempoTotal = gravacoes.reduce((acc, g) => acc + (g.duracao || 0), 0);
+                    const tamanhoTotal = Math.floor(Math.random() * 5000) + 1000; // Simular
+                    
+                    document.getElementById('total-gravacoes').textContent = gravacoes.length;
+                    document.getElementById('gravacoes-hoje').textContent = gravacoesHoje;
+                    document.getElementById('tempo-total').textContent = `${Math.floor(tempoTotal / 3600)}h`;
+                    document.getElementById('tamanho-total').textContent = `${(tamanhoTotal / 1000).toFixed(1)} GB`;
+                }
+            } catch (error) {
+                console.error('Erro ao carregar métricas:', error);
+            }
+        }
+
+        // Carregar dados iniciais
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarMetricas();
+            
+            // Atualizar métricas a cada 30 segundos
+            setInterval(atualizarMetricas, 30000);
+            
+            // Simular uso de armazenamento em tempo real
+            setInterval(() => {
+                const hdBar = document.querySelector('.grava-unit.hd-principal .storage-fill');
+                const extraBar = document.querySelector('.grava-unit.extra .storage-fill');
+                
+                if (gravacoes.some(g => g.status === 'recording')) {
+                    const hdWidth = parseFloat(hdBar.style.width) || 35;
+                    const extraWidth = parseFloat(extraBar.style.width) || 58;
+                    
+                    hdBar.style.width = Math.min(90, hdWidth + 0.1) + '%';
+                    extraBar.style.width = Math.min(90, extraWidth + 0.05) + '%';
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 

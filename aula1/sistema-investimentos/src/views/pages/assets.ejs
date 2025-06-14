@@ -1,0 +1,425 @@
+<%- include('../layout/base', { body: `
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0 text-primary">
+                            <i class="fas fa-coins me-2"></i>
+                            Catálogo de Ativos
+                        </h1>
+                        <p class="text-muted mb-0">Explore e invista em ações, FIIs, renda fixa e criptomoedas</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#investModal">
+                            <i class="fas fa-plus me-2"></i>
+                            Investir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="searchInput" 
+                                           placeholder="Buscar por código ou nome...">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="typeFilter">
+                                    <option value="">Todos os tipos</option>
+                                    <option value="acao">Ações</option>
+                                    <option value="fii">FIIs</option>
+                                    <option value="renda_fixa">Renda Fixa</option>
+                                    <option value="crypto">Criptomoedas</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="sortFilter">
+                                    <option value="symbol">Código</option>
+                                    <option value="name">Nome</option>
+                                    <option value="current_price">Preço</option>
+                                    <option value="change_percent">Variação</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-secondary w-100" onclick="clearFilters()">
+                                    <i class="fas fa-times me-1"></i>
+                                    Limpar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo do Mercado -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Ibovespa</div>
+                            <div class="widget-value">121.845</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +1.2% hoje
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Dólar</div>
+                            <div class="widget-value">R$ 5,23</div>
+                            <small class="text-danger">
+                                <i class="fas fa-arrow-down me-1"></i>
+                                -0.5% hoje
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Bitcoin</div>
+                            <div class="widget-value">$ 43.250</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +3.8% hoje
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fab fa-bitcoin"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Selic</div>
+                            <div class="widget-value">12,25%</div>
+                            <small class="text-muted">
+                                Meta atual
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lista de Ativos -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Ativos Disponíveis
+                        </h5>
+                        <span id="assetsCount" class="badge bg-primary">0 ativos</span>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Nome</th>
+                                        <th>Tipo</th>
+                                        <th>Preço Atual</th>
+                                        <th>Variação 24h</th>
+                                        <th>Volume</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="assetsTable">
+                                    <tr>
+                                        <td colspan="7" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                            <p class="text-muted mt-2">Carregando ativos...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Investimento -->
+    <div class="modal fade" id="investModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-chart-line me-2"></i>
+                        Investir em Ativo
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="investForm">
+                        <input type="hidden" id="selectedAssetId">
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Ativo Selecionado</label>
+                            <div class="card bg-light">
+                                <div class="card-body p-3">
+                                    <div id="selectedAssetInfo">
+                                        Nenhum ativo selecionado
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="quantity" 
+                                           placeholder="Quantidade" required min="1">
+                                    <label for="quantity">Quantidade</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="price" 
+                                           placeholder="Preço" required min="0.01" step="0.01">
+                                    <label for="price">Preço por unidade</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Valor Total</label>
+                            <div class="form-control bg-light" id="totalValue"></div>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="marketOrder">
+                            <label class="form-check-label" for="marketOrder">
+                                Ordem a mercado (preço atual)
+                            </label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="executeInvestment()">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        Investir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/format.js"></script>
+    <script>
+        let assetsData = [];
+        let filteredAssets = [];
+
+        // Dados simulados de ativos
+        const mockAssets = [
+            { id: 1, symbol: 'PETR4', name: 'Petróleo Brasileiro S.A.', type: 'acao', current_price: 32.50, change_percent: 2.1, volume: 125000000 },
+            { id: 2, symbol: 'VALE3', name: 'Vale S.A.', type: 'acao', current_price: 68.20, change_percent: -1.5, volume: 89000000 },
+            { id: 3, symbol: 'ITUB4', name: 'Itaú Unibanco Holding S.A.', type: 'acao', current_price: 28.40, change_percent: 0.8, volume: 156000000 },
+            { id: 4, symbol: 'BBDC4', name: 'Banco Bradesco S.A.', type: 'acao', current_price: 15.20, change_percent: -0.3, volume: 78000000 },
+            { id: 5, symbol: 'HGLG11', name: 'CSHG Real Estate FII', type: 'fii', current_price: 158.50, change_percent: 1.2, volume: 12000000 },
+            { id: 6, symbol: 'XPML11', name: 'XP Malls FII', type: 'fii', current_price: 89.30, change_percent: 0.5, volume: 8500000 },
+            { id: 7, symbol: 'LTN', name: 'Letra do Tesouro Nacional', type: 'renda_fixa', current_price: 980.50, change_percent: 0.1, volume: 5000000 },
+            { id: 8, symbol: 'BTC', name: 'Bitcoin', type: 'crypto', current_price: 43250.00, change_percent: 3.8, volume: 2800000000 },
+            { id: 9, symbol: 'ETH', name: 'Ethereum', type: 'crypto', current_price: 2890.00, change_percent: 2.5, volume: 1200000000 }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAssets();
+            setupEventListeners();
+            document.getElementById('totalValue').textContent = formatCurrency(0);
+        });
+
+        function setupEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', debounce(filterAssets, 300));
+            document.getElementById('typeFilter').addEventListener('change', filterAssets);
+            document.getElementById('sortFilter').addEventListener('change', filterAssets);
+            
+            // Calcular valor total no modal
+            document.getElementById('quantity').addEventListener('input', calculateTotal);
+            document.getElementById('price').addEventListener('input', calculateTotal);
+            document.getElementById('marketOrder').addEventListener('change', function() {
+                document.getElementById('price').disabled = this.checked;
+                calculateTotal();
+            });
+        }
+
+        async function loadAssets() {
+            try {
+                // Simular carregamento da API
+                setTimeout(() => {
+                    assetsData = mockAssets;
+                    filteredAssets = [...assetsData];
+                    renderAssets();
+                    updateAssetsCount();
+                }, 1000);
+            } catch (error) {
+                console.error('Erro ao carregar ativos:', error);
+                document.getElementById('assetsTable').innerHTML = '<tr><td colspan="7" class="text-center py-4 text-danger">Erro ao carregar ativos</td></tr>';
+            }
+        }
+
+        function filterAssets() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const type = document.getElementById('typeFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+
+            filteredAssets = assetsData.filter(asset => {
+                const matchesSearch = asset.symbol.toLowerCase().includes(search) || 
+                                    asset.name.toLowerCase().includes(search);
+                const matchesType = !type || asset.type === type;
+                return matchesSearch && matchesType;
+            });
+
+            // Ordenar
+            filteredAssets.sort((a, b) => {
+                if (sort === 'change_percent') {
+                    return b[sort] - a[sort];
+                }
+                return a[sort] > b[sort] ? 1 : -1;
+            });
+
+            renderAssets();
+            updateAssetsCount();
+        }
+
+        function renderAssets() {
+            const tbody = document.getElementById('assetsTable');
+            
+            if (filteredAssets.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-muted">Nenhum ativo encontrado</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = filteredAssets.map(asset => {
+                const changeClass = asset.change_percent > 0 ? 'text-success' : asset.change_percent < 0 ? 'text-danger' : 'text-muted';
+                const changeIcon = asset.change_percent > 0 ? 'fa-arrow-up' : asset.change_percent < 0 ? 'fa-arrow-down' : 'fa-minus';
+                
+                return '<tr><td><strong>' + asset.symbol + '</strong></td><td>' + asset.name + '</td><td><span class="badge bg-secondary">' + getTypeLabel(asset.type) + '</span></td><td>' + formatCurrency(asset.current_price) + '</td><td class="' + changeClass + '"><i class="fas ' + changeIcon + ' me-1"></i>' + asset.change_percent.toFixed(2) + '%</td><td>' + formatVolume(asset.volume) + '</td><td><button class="btn btn-sm btn-outline-primary" onclick="selectAsset(' + asset.id + ')"><i class="fas fa-plus me-1"></i> Investir</button></td></tr>';
+            }).join('');
+        }
+
+        function getTypeLabel(type) {
+            const labels = {
+                'acao': 'Ação',
+                'fii': 'FII',
+                'renda_fixa': 'Renda Fixa',
+                'crypto': 'Crypto'
+            };
+            return labels[type] || type;
+        }
+
+        function formatVolume(volume) {
+            if (volume >= 1000000000) return (volume / 1000000000).toFixed(1) + 'B';
+            if (volume >= 1000000) return (volume / 1000000).toFixed(1) + 'M';
+            if (volume >= 1000) return (volume / 1000).toFixed(1) + 'K';
+            return volume.toString();
+        }
+
+        function updateAssetsCount() {
+            document.getElementById('assetsCount').textContent = filteredAssets.length + ' ativos';
+        }
+
+        function clearFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('typeFilter').value = '';
+            document.getElementById('sortFilter').value = 'symbol';
+            filterAssets();
+        }
+
+        function selectAsset(assetId) {
+            const asset = assetsData.find(a => a.id === assetId);
+            if (!asset) return;
+
+            document.getElementById('selectedAssetId').value = assetId;
+            document.getElementById('selectedAssetInfo').innerHTML = '<strong>' + asset.symbol + '</strong> - ' + asset.name + '<br><small class="text-muted">Preço atual: R$ ' + asset.current_price.toFixed(2) + '</small>';
+            document.getElementById('price').value = asset.current_price.toFixed(2);
+            
+            const modal = new bootstrap.Modal(document.getElementById('investModal'));
+            modal.show();
+        }
+
+        function calculateTotal() {
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const total = quantity * price;
+            
+            document.getElementById('totalValue').textContent = formatCurrency(total);
+        }
+
+        function executeInvestment() {
+            const assetId = document.getElementById('selectedAssetId').value;
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value;
+
+            if (!assetId || !quantity || !price) {
+                window.Utils.showNotification('Por favor, preencha todos os campos', 'warning');
+                return;
+            }
+
+            // Simular investimento
+            window.Utils.showNotification('Investimento executado com sucesso!', 'success');
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('investModal'));
+            modal.hide();
+            
+            // Limpar formulário
+            document.getElementById('investForm').reset();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+` }) %> 

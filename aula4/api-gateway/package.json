@@ -1,0 +1,28 @@
+{
+  "name": "api-gateway-exemplo",
+  "version": "1.0.0",
+  "description": "Exemplo de API Gateway com múltiplos microserviços",
+  "main": "gateway.js",
+  "scripts": {
+    "gateway": "node gateway.js",
+    "servico-usuarios": "node servicos/usuarios.js",
+    "servico-produtos": "node servicos/produtos.js",
+    "servico-pedidos": "node servicos/pedidos.js",
+    "cliente": "node cliente.js",
+    "start-all": "concurrently \"npm run servico-usuarios\" \"npm run servico-produtos\" \"npm run servico-pedidos\" \"npm run gateway\"",
+    "test": "node cliente.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "http-proxy-middleware": "^2.0.6",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  },
+  "keywords": ["api-gateway", "microservices", "proxy", "routing"],
+  "author": "",
+  "license": "MIT"
+} 

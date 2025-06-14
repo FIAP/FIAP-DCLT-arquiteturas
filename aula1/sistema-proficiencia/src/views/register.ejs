@@ -1,0 +1,26 @@
+<%- include('header') %>
+<h2>Cadastro de Usuário</h2>
+<% if (typeof error !== 'undefined') { %>
+  <div class="error"><%= error %></div>
+<% } %>
+<form action="/register" method="POST">
+  <label for="userName">Usuário:</label>
+  <input type="text" id="userName" name="userName" required>
+  <br>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" required>
+  <br>
+  <label for="password">Senha:</label>
+  <input type="password" id="password" name="password" required>
+  <br>
+  <label for="role">Perfil:</label>
+  <select id="role" name="role" required>
+    <option value="CANDIDATO">Candidato</option>
+    <option value="PROFESSOR">Professor</option>
+    <option value="EMPRESA">Empresa</option>
+    <option value="ADM">ADM</option>
+  </select>
+  <br>
+  <button type="submit">Cadastrar</button>
+</form>
+<%- include('footer') %> 

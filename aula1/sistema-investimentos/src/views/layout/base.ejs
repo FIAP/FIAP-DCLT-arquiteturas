@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'Sistema de Investimentos' %> - FIAP</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/app.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,.1);
+            transition: transform 0.2s;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #34495e;
+            border-color: #34495e;
+        }
+        
+        .text-success { color: var(--success-color) !important; }
+        .text-danger { color: var(--danger-color) !important; }
+        .text-warning { color: var(--warning-color) !important; }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .sidebar {
+            background-color: white;
+            min-height: 100vh;
+            padding: 1rem;
+            box-shadow: 2px 0 5px rgba(0,0,0,.1);
+        }
+        
+        .nav-link {
+            color: var(--dark-color);
+            padding: 0.8rem 1rem;
+            margin: 0.2rem 0;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--light-color);
+            color: var(--primary-color);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-chart-line me-2"></i>
+                Sistema de Investimentos
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fas fa-home me-1"></i> Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/portfolio"><i class="fas fa-briefcase me-1"></i> Portfólio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/assets"><i class="fas fa-coins me-1"></i> Ativos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/transactions"><i class="fas fa-exchange-alt me-1"></i> Transações</a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api-docs" target="_blank">
+                            <i class="fas fa-book me-1"></i> API Docs
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i> Usuário
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/login"><i class="fas fa-sign-in-alt me-1"></i> Login</a></li>
+                            <li><a class="dropdown-item" href="/register"><i class="fas fa-user-plus me-1"></i> Cadastro</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/profile"><i class="fas fa-cog me-1"></i> Perfil</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logout()"><i class="fas fa-sign-out-alt me-1"></i> Sair</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5><i class="fas fa-chart-line me-2"></i>Sistema de Investimentos</h5>
+                    <p class="mb-0">Plataforma completa para gerenciamento de investimentos e portfólios.</p>
+                    <small class="text-muted">FIAP - Arquitetura de Software</small>
+                </div>
+                <div class="col-md-3">
+                    <h6>Links Úteis</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/api-docs" class="text-light"><i class="fas fa-book me-1"></i> Documentação API</a></li>
+                        <li><a href="/health" class="text-light"><i class="fas fa-heartbeat me-1"></i> Status do Sistema</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h6>Contato</h6>
+                    <p class="mb-0">
+                        <i class="fas fa-envelope me-1"></i> suporte@fiap.com.br<br>
+                        <i class="fas fa-globe me-1"></i> www.fiap.com.br
+                    </p>
+                </div>
+            </div>
+            <hr class="my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <small>&copy; 2024 FIAP. Todos os direitos reservados.</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JS -->
+    <script src="/js/app.js"></script>
+    
+    <!-- Additional Scripts -->
+    <script>
+        // Função de logout
+        function logout() {
+            if (confirm('Deseja realmente sair?')) {
+                fetch('/api/v1/auth/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                }).then(() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                });
+            }
+        }
+        
+        // Verificar se usuário está logado
+        function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                // Atualizar menu para usuário logado
+                const userDropdown = document.getElementById('userDropdown');
+                if (userDropdown) {
+                    userDropdown.innerHTML = '<i class="fas fa-user me-1"></i> Minha Conta';
+                }
+            }
+        }
+        
+        // Executar ao carregar a página
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 

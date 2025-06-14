@@ -1,0 +1,594 @@
+<%- include('../layout/base', { body: `
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0 text-primary">
+                            <i class="fas fa-exchange-alt me-2"></i>
+                            Transações
+                        </h1>
+                        <p class="text-muted mb-0">Histórico completo e nova transação</p>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newTransactionModal">
+                            <i class="fas fa-plus me-2"></i>
+                            Nova Transação
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estatísticas -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Total Investido</div>
+                            <div class="widget-value">R$ 89.240,00</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +R$ 5.200 este mês
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Transações Hoje</div>
+                            <div class="widget-value">3</div>
+                            <small class="text-muted">2 compras, 1 venda</small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Volume do Mês</div>
+                            <div class="widget-value">R$ 24.580,00</div>
+                            <small class="text-info">
+                                <i class="fas fa-chart-line me-1"></i>
+                                18 transações
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Última Transação</div>
+                            <div class="widget-value">PETR4</div>
+                            <small class="text-muted">Compra - 14:30</small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="startDate">
+                                    <label for="startDate">Data Início</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="endDate">
+                                    <label for="endDate">Data Fim</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-floating">
+                                    <select class="form-select" id="typeFilter">
+                                        <option value="">Todos</option>
+                                        <option value="buy">Compra</option>
+                                        <option value="sell">Venda</option>
+                                    </select>
+                                    <label for="typeFilter">Tipo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="assetFilter" placeholder="Ativo">
+                                    <label for="assetFilter">Ativo</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100 h-100" onclick="applyFilters()">
+                                    <i class="fas fa-filter me-2"></i>
+                                    Filtrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Transações -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Histórico de Transações
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-outline-secondary" onclick="exportTransactions()">
+                                <i class="fas fa-download me-2"></i>
+                                Exportar
+                            </button>
+                            <span id="transactionCount" class="badge bg-primary">0 transações</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Tipo</th>
+                                        <th>Ativo</th>
+                                        <th>Quantidade</th>
+                                        <th>Preço</th>
+                                        <th>Valor Total</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="transactionsTable">
+                                    <tr>
+                                        <td colspan="8" class="text-center py-4">
+                                            <div class="spinner"></div>
+                                            <p class="text-muted mt-2">Carregando transações...</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <div class="card-footer">
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0 justify-content-center" id="pagination">
+                                <!-- Paginação gerada via JavaScript -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova Transação -->
+    <div class="modal fade" id="newTransactionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-plus me-2"></i>
+                        Nova Transação
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="transactionForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="transactionType" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="buy">Compra</option>
+                                        <option value="sell">Venda</option>
+                                    </select>
+                                    <label for="transactionType">Tipo de Transação</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="assetSymbol" 
+                                           placeholder="Ex: PETR4" required>
+                                    <label for="assetSymbol">Código do Ativo</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="quantity" 
+                                           placeholder="Quantidade" required min="1" step="1">
+                                    <label for="quantity">Quantidade</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="price" 
+                                           placeholder="Preço" required min="0.01" step="0.01">
+                                    <label for="price">Preço por Unidade</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control bg-light" id="totalValue" 
+                                           readonly placeholder="Total">
+                                    <label for="totalValue">Valor Total</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="datetime-local" class="form-control" id="transactionDate" required>
+                                    <label for="transactionDate">Data e Hora</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="fees" 
+                                           placeholder="0.00" min="0" step="0.01">
+                                    <label for="fees">Taxas/Corretagem (R$)</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-floating mb-3">
+                            <textarea class="form-control" id="notes" style="height: 80px" 
+                                      placeholder="Observações opcionais..."></textarea>
+                            <label for="notes">Observações</label>
+                        </div>
+
+                        <!-- Resumo da Transação -->
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-calculator me-2"></i>
+                                    Resumo da Transação
+                                </h6>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-muted">Valor dos Ativos:</small>
+                                        <div id="summaryAssetValue"></div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-muted">Taxas:</small>
+                                        <div id="summaryFees"></div>
+                                    </div>
+                                    <div class="col-12 mt-2">
+                                        <strong class="text-muted">Total Final:</strong>
+                                        <div class="h5 mb-0" id="summaryTotal"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="saveTransaction()">
+                        <i class="fas fa-save me-2"></i>
+                        Salvar Transação
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/format.js"></script>
+    <script>
+        // Dados simulados de transações
+        const mockTransactions = [
+            {
+                id: 1,
+                date: '2025-01-12 14:30:15',
+                type: 'buy',
+                symbol: 'PETR4',
+                name: 'Petrobras',
+                quantity: 100,
+                price: 32.50,
+                total: 3250.00,
+                fees: 5.20,
+                status: 'completed'
+            },
+            {
+                id: 2,
+                date: '2025-01-11 11:15:30',
+                type: 'sell',
+                symbol: 'VALE3',
+                name: 'Vale',
+                quantity: 50,
+                price: 69.80,
+                total: 3490.00,
+                fees: 7.85,
+                status: 'completed'
+            },
+            {
+                id: 3,
+                date: '2025-01-10 16:45:00',
+                type: 'buy',
+                symbol: 'ITUB4',
+                name: 'Itaú Unibanco',
+                quantity: 200,
+                price: 28.25,
+                total: 5650.00,
+                fees: 9.40,
+                status: 'completed'
+            },
+            {
+                id: 4,
+                date: '2025-01-09 09:20:45',
+                type: 'buy',
+                symbol: 'HGLG11',
+                name: 'CSHG Real Estate',
+                quantity: 50,
+                price: 156.80,
+                total: 7840.00,
+                fees: 12.50,
+                status: 'pending'
+            },
+            {
+                id: 5,
+                date: '2025-01-08 13:10:20',
+                type: 'sell',
+                symbol: 'BBDC4',
+                name: 'Bradesco',
+                quantity: 150,
+                price: 15.45,
+                total: 2317.50,
+                fees: 4.85,
+                status: 'completed'
+            }
+        ];
+
+        let filteredTransactions = [...mockTransactions];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTransactions();
+            setupEventListeners();
+            setDefaultDateTime();
+            document.getElementById('summaryAssetValue').textContent = formatCurrency(0);
+            document.getElementById('summaryFees').textContent = formatCurrency(0);
+            document.getElementById('summaryTotal').textContent = formatCurrency(0);
+        });
+
+        function setupEventListeners() {
+            // Calcular total automaticamente
+            document.getElementById('quantity').addEventListener('input', calculateTotal);
+            document.getElementById('price').addEventListener('input', calculateTotal);
+            document.getElementById('fees').addEventListener('input', calculateTotal);
+            
+            // Filtros
+            document.getElementById('startDate').addEventListener('change', applyFilters);
+            document.getElementById('endDate').addEventListener('change', applyFilters);
+            document.getElementById('typeFilter').addEventListener('change', applyFilters);
+            document.getElementById('assetFilter').addEventListener('input', debounce(applyFilters, 300));
+        }
+
+        function setDefaultDateTime() {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            document.getElementById('transactionDate').value = now.toISOString().slice(0, 16);
+        }
+
+        function loadTransactions() {
+            setTimeout(() => {
+                renderTransactions();
+                updateTransactionCount();
+                renderPagination();
+            }, 1000);
+        }
+
+        function renderTransactions() {
+            const tbody = document.getElementById('transactionsTable');
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageTransactions = filteredTransactions.slice(startIndex, endIndex);
+
+            if (pageTransactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4 text-muted">Nenhuma transação encontrada</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = pageTransactions.map(transaction => {
+                const typeClass = transaction.type === 'buy' ? 'text-success' : 'text-danger';
+                const typeIcon = transaction.type === 'buy' ? 'fa-arrow-down' : 'fa-arrow-up';
+                const typeLabel = transaction.type === 'buy' ? 'Compra' : 'Venda';
+                const statusClass = transaction.status === 'completed' ? 'bg-success' : 'bg-warning';
+                const statusLabel = transaction.status === 'completed' ? 'Concluída' : 'Pendente';
+
+                return '<tr><td>' + formatDateTime(transaction.date) + '</td><td><span class="' + typeClass + '"><i class="fas ' + typeIcon + ' me-1"></i>' + typeLabel + '</span></td><td><strong>' + transaction.symbol + '</strong><br><small class="text-muted">' + transaction.name + '</small></td><td>' + transaction.quantity + '</td><td>' + formatCurrency(transaction.price) + '</td><td>' + formatCurrency(transaction.total) + '</td><td><span class="badge ' + statusClass + '">' + statusLabel + '</span></td><td><div class="btn-group" role="group"><button class="btn btn-sm btn-outline-info" onclick="viewTransaction(' + transaction.id + ')" title="Ver detalhes"><i class="fas fa-eye"></i></button><button class="btn btn-sm btn-outline-primary" onclick="duplicateTransaction(' + transaction.id + ')" title="Duplicar"><i class="fas fa-copy"></i></button></div></td></tr>';
+            }).join('');
+        }
+
+        function applyFilters() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const type = document.getElementById('typeFilter').value;
+            const asset = document.getElementById('assetFilter').value.toLowerCase();
+
+            filteredTransactions = mockTransactions.filter(transaction => {
+                const transactionDate = transaction.date.split(' ')[0];
+                
+                const matchesDateRange = (!startDate || transactionDate >= startDate) && 
+                                       (!endDate || transactionDate <= endDate);
+                const matchesType = !type || transaction.type === type;
+                const matchesAsset = !asset || 
+                                   transaction.symbol.toLowerCase().includes(asset) ||
+                                   transaction.name.toLowerCase().includes(asset);
+
+                return matchesDateRange && matchesType && matchesAsset;
+            });
+
+            currentPage = 1;
+            renderTransactions();
+            updateTransactionCount();
+            renderPagination();
+        }
+
+        function calculateTotal() {
+            const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+            const price = parseFloat(document.getElementById('price').value) || 0;
+            const fees = parseFloat(document.getElementById('fees').value) || 0;
+            
+            const assetValue = quantity * price;
+            const total = assetValue + fees;
+            
+            document.getElementById('totalValue').value = formatCurrency(assetValue);
+            document.getElementById('summaryAssetValue').textContent = formatCurrency(assetValue);
+            document.getElementById('summaryFees').textContent = formatCurrency(fees);
+            document.getElementById('summaryTotal').textContent = formatCurrency(total);
+        }
+
+        function saveTransaction() {
+            const form = document.getElementById('transactionForm');
+            const formData = new FormData(form);
+            
+            // Validar campos obrigatórios
+            const requiredFields = ['transactionType', 'assetSymbol', 'quantity', 'price', 'transactionDate'];
+            for (const field of requiredFields) {
+                if (!document.getElementById(field).value) {
+                    window.Utils.showNotification('Por favor, preencha todos os campos obrigatórios', 'warning');
+                    return;
+                }
+            }
+
+            // Simular salvamento
+            window.Utils.showNotification('Transação salva com sucesso!', 'success');
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('newTransactionModal'));
+            modal.hide();
+            
+            // Limpar formulário
+            form.reset();
+            setDefaultDateTime();
+            calculateTotal();
+        }
+
+        function viewTransaction(id) {
+            const transaction = mockTransactions.find(t => t.id === id);
+            if (transaction) {
+                window.Utils.showNotification('Visualizando transação #' + id, 'info');
+                // Implementar modal de detalhes
+            }
+        }
+
+        function duplicateTransaction(id) {
+            const transaction = mockTransactions.find(t => t.id === id);
+            if (transaction) {
+                // Preencher formulário com dados da transação
+                document.getElementById('transactionType').value = transaction.type;
+                document.getElementById('assetSymbol').value = transaction.symbol;
+                document.getElementById('quantity').value = transaction.quantity;
+                document.getElementById('price').value = transaction.price;
+                document.getElementById('fees').value = transaction.fees;
+                
+                calculateTotal();
+                
+                const modal = new bootstrap.Modal(document.getElementById('newTransactionModal'));
+                modal.show();
+            }
+        }
+
+        function exportTransactions() {
+            window.Utils.showNotification('Exportando transações...', 'info');
+            // Implementar exportação
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            const pagination = document.getElementById('pagination');
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+
+            let paginationHTML = '';
+            
+            // Botão anterior
+            paginationHTML += '<li class="page-item ' + (currentPage === 1 ? 'disabled' : '') + '"><a class="page-link" href="#" onclick="changePage(' + (currentPage - 1) + ')">Anterior</a></li>';
+            
+            // Números das páginas
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage || i === 1 || i === totalPages || Math.abs(i - currentPage) <= 1) {
+                    paginationHTML += '<li class="page-item ' + (i === currentPage ? 'active' : '') + '"><a class="page-link" href="#" onclick="changePage(' + i + ')">' + i + '</a></li>';
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+            
+            // Botão próximo
+            paginationHTML += '<li class="page-item ' + (currentPage === totalPages ? 'disabled' : '') + '"><a class="page-link" href="#" onclick="changePage(' + (currentPage + 1) + ')">Próximo</a></li>';
+            
+            pagination.innerHTML = paginationHTML;
+        }
+
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderTransactions();
+                renderPagination();
+            }
+        }
+
+        function updateTransactionCount() {
+            document.getElementById('transactionCount').textContent = filteredTransactions.length + ' transações';
+        }
+
+        function formatDateTime(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return date.toLocaleDateString('pt-BR') + '<br><small class="text-muted">' + date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + '</small>';
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+    </script>
+` }) %> 

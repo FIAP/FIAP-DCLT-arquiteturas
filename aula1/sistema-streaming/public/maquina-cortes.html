@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Máquina de Cortes - Editor Automatizado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu a {
+            color: #8e44ad;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .editor-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .ai-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #8e44ad;
+        }
+
+        .operations-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #3498db;
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .ai-icon {
+            width: 32px;
+            height: 32px;
+            background: #8e44ad;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-analyzing {
+            background: #e1ecf4;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+        }
+
+        .ai-capabilities {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .capability-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .capability-item:last-child {
+            border-bottom: none;
+        }
+
+        .capability-icon {
+            width: 24px;
+            height: 24px;
+            background: #8e44ad;
+            border-radius: 50%;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .capability-text {
+            flex: 1;
+        }
+
+        .capability-status {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 10px;
+            background: #28a745;
+            color: white;
+        }
+
+        .operations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .operation-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+        }
+
+        .operation-card:hover {
+            border-color: #3498db;
+            transform: translateY(-2px);
+        }
+
+        .operation-card.active {
+            border-color: #8e44ad;
+            background: #f3e5f5;
+        }
+
+        .operation-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .operation-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 5px;
+        }
+
+        .operation-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .editing-queue {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .queue-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #8e44ad;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .edit-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8e44ad;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-status {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-waiting {
+            background: #e2e3e5;
+            color: #6c757d;
+        }
+
+        .status-analyzing-item {
+            background: #e1ecf4;
+            color: #0c5460;
+        }
+
+        .status-editing {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .analysis-progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .analysis-step {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .step-name {
+            font-size: 14px;
+            color: #495057;
+        }
+
+        .step-status {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .step-complete {
+            color: #28a745;
+        }
+
+        .step-processing {
+            color: #ffc107;
+        }
+
+        .step-pending {
+            color: #6c757d;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #8e44ad 0%, #3498db 100%);
+            transition: width 0.3s ease;
+        }
+
+        .highlights-preview {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .highlight-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 3px solid #8e44ad;
+        }
+
+        .highlight-time {
+            font-weight: bold;
+            color: #8e44ad;
+            margin-bottom: 5px;
+        }
+
+        .highlight-desc {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .highlight-confidence {
+            font-size: 12px;
+            color: #28a745;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .editor-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .operations-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
+            
+            .queue-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Máquina de Cortes - Editor Automatizado</h1>
+            <p>Sistema de Inteligência Artificial para edição automática de vídeos</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="/rec-front.html">REC Front</a>
+            <a href="/sistema-grava.html">Sistema Grava</a>
+            <a href="/fila-uol.html">Fila UOL</a>
+            <a href="/fila-youtube.html">Fila YouTube</a>
+            <a href="/maquina-cortes.html" class="active">Máquina Cortes</a>
+            <a href="/filas-rec.html">Filas REC</a>
+            <a href="/monitoramento.html">Monitoramento</a>
+        </div>
+
+        <!-- Dashboard IA -->
+        <div class="editor-dashboard">
+            <!-- Painel IA -->
+            <div class="ai-panel">
+                <div class="panel-title">
+                    <div class="ai-icon">AI</div>
+                    Inteligência Artificial
+                </div>
+
+                <div id="ai-status" class="status-indicator status-active">
+                    🤖 IA Ativa - Algoritmos carregados
+                </div>
+
+                <div class="ai-capabilities">
+                    <div class="capability-item">
+                        <div class="capability-icon">👁</div>
+                        <div class="capability-text">
+                            <strong>Detecção de Cenas</strong><br>
+                            <small>Análise automática de mudanças</small>
+                        </div>
+                        <div class="capability-status">Ativo</div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon">🎯</div>
+                        <div class="capability-text">
+                            <strong>Detecção de Faces</strong><br>
+                            <small>Reconhecimento e tracking</small>
+                        </div>
+                        <div class="capability-status">Ativo</div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon">🎵</div>
+                        <div class="capability-text">
+                            <strong>Análise de Áudio</strong><br>
+                            <small>Detecção de fala e música</small>
+                        </div>
+                        <div class="capability-status">Ativo</div>
+                    </div>
+                    <div class="capability-item">
+                        <div class="capability-icon">⚡</div>
+                        <div class="capability-text">
+                            <strong>Geração de Highlights</strong><br>
+                            <small>Momentos importantes</small>
+                        </div>
+                        <div class="capability-status">Ativo</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel Operações -->
+            <div class="operations-panel">
+                <div class="panel-title">
+                    Operações Disponíveis
+                </div>
+
+                <div class="operations-grid">
+                    <div class="operation-card active">
+                        <div class="operation-icon">✂️</div>
+                        <div class="operation-title">Cortes Automáticos</div>
+                        <div class="operation-desc">Remoção de pausas e silêncios</div>
+                    </div>
+                    <div class="operation-card active">
+                        <div class="operation-icon">🎬</div>
+                        <div class="operation-title">Detecção de Cenas</div>
+                        <div class="operation-desc">Identificação de mudanças</div>
+                    </div>
+                    <div class="operation-card active">
+                        <div class="operation-icon">⭐</div>
+                        <div class="operation-title">Highlights</div>
+                        <div class="operation-desc">Momentos mais importantes</div>
+                    </div>
+                    <div class="operation-card">
+                        <div class="operation-icon">🔊</div>
+                        <div class="operation-title">Sync Áudio</div>
+                        <div class="operation-desc">Sincronização automática</div>
+                    </div>
+                    <div class="operation-card">
+                        <div class="operation-icon">🎨</div>
+                        <div class="operation-title">Correção de Cor</div>
+                        <div class="operation-desc">Ajustes automáticos</div>
+                    </div>
+                    <div class="operation-card">
+                        <div class="operation-icon">📏</div>
+                        <div class="operation-title">Recorte Inteligente</div>
+                        <div class="operation-desc">Ajuste de proporções</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fila de Edição -->
+        <div class="editing-queue">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Fila de Edição Automatizada</h3>
+                <div class="queue-controls">
+                    <button class="btn btn-primary" onclick="pausarFila()">Pausar IA</button>
+                    <button class="btn btn-info" onclick="configurarIA()">Configurar IA</button>
+                    <button class="btn btn-secondary" onclick="limparFila()">Limpar</button>
+                    <button class="btn btn-success" onclick="atualizarFila()">Atualizar</button>
+                </div>
+            </div>
+
+            <div id="editing-items-container">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    Nenhum vídeo na fila de edição
+                </div>
+            </div>
+        </div>
+
+        <!-- Preview de Highlights -->
+        <div class="highlights-preview">
+            <h3>Highlights Detectados</h3>
+            <div id="highlights-container">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    Aguardando análise de vídeos
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        let filaItems = [];
+        let highlightsDetectados = [];
+        let iaAtiva = true;
+
+        // Event listeners do Socket.IO
+        socket.on('sistema-status', function(data) {
+            if (data.filas && data.filas.CORTES) {
+                atualizarStatusFila(data.filas.CORTES);
+            }
+        });
+
+        socket.on('item-atualizado', function(data) {
+            if (data.fila === 'CORTES') {
+                atualizarItemFila(data.item);
+            }
+        });
+
+        socket.on('item-removido', function(data) {
+            if (data.fila === 'CORTES') {
+                removerItemFila(data.itemId);
+            }
+        });
+
+        function atualizarStatusFila(dadosFila) {
+            const stats = dadosFila.estatisticas;
+
+            // Atualizar status da IA
+            const statusElement = document.getElementById('ai-status');
+            if (!stats.ativa) {
+                statusElement.className = 'status-indicator status-processing';
+                statusElement.textContent = '⏸ IA Pausada';
+                iaAtiva = false;
+            } else if (stats.processando > 0) {
+                statusElement.className = 'status-indicator status-analyzing';
+                statusElement.textContent = `🔍 Analisando ${stats.processando} vídeo(s)`;
+                iaAtiva = true;
+            } else {
+                statusElement.className = 'status-indicator status-active';
+                statusElement.textContent = '🤖 IA Ativa - Aguardando conteúdo';
+                iaAtiva = true;
+            }
+
+            // Atualizar lista de itens
+            filaItems = dadosFila.itens || [];
+            atualizarListaItens();
+        }
+
+        function atualizarItemFila(item) {
+            const index = filaItems.findIndex(i => i.id === item.id);
+            if (index !== -1) {
+                filaItems[index] = item;
+                atualizarListaItens();
+                
+                // Se concluído, gerar highlights
+                if (item.status === 'CONCLUIDO') {
+                    setTimeout(() => gerarHighlights(item), 1000);
+                }
+            }
+        }
+
+        function removerItemFila(itemId) {
+            filaItems = filaItems.filter(i => i.id !== itemId);
+            atualizarListaItens();
+        }
+
+        function atualizarListaItens() {
+            const container = document.getElementById('editing-items-container');
+            
+            if (filaItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        Nenhum vídeo na fila de edição
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filaItems.forEach(item => {
+                const statusConfig = {
+                    'AGUARDANDO': { class: 'status-waiting', text: 'Aguardando' },
+                    'PROCESSANDO': { class: 'status-editing', text: 'Analisando' },
+                    'CONCLUIDO': { class: 'status-completed', text: 'Concluído' },
+                    'ERRO': { class: 'status-failed', text: 'Erro' }
+                };
+
+                const config = statusConfig[item.status] || statusConfig['AGUARDANDO'];
+
+                html += `
+                    <div class="edit-item">
+                        <div class="item-header">
+                            <div class="item-title">
+                                Vídeo ID: ${item.gravacaoId.substring(0, 8)}...
+                            </div>
+                            <div class="item-status ${config.class}">
+                                ${config.text}
+                            </div>
+                        </div>
+                        
+                        ${item.status === 'PROCESSANDO' ? `
+                            <div class="analysis-progress">
+                                <div class="analysis-step">
+                                    <span class="step-name">🔍 Análise de Vídeo</span>
+                                    <span class="step-status ${item.progresso > 20 ? 'step-complete' : 'step-processing'}">
+                                        ${item.progresso > 20 ? '✓ Concluído' : '⏳ Processando'}
+                                    </span>
+                                </div>
+                                <div class="analysis-step">
+                                    <span class="step-name">🎬 Detecção de Cenas</span>
+                                    <span class="step-status ${item.progresso > 40 ? 'step-complete' : item.progresso > 20 ? 'step-processing' : 'step-pending'}">
+                                        ${item.progresso > 40 ? '✓ Concluído' : item.progresso > 20 ? '⏳ Processando' : '⏸ Aguardando'}
+                                    </span>
+                                </div>
+                                <div class="analysis-step">
+                                    <span class="step-name">🎵 Análise de Áudio</span>
+                                    <span class="step-status ${item.progresso > 60 ? 'step-complete' : item.progresso > 40 ? 'step-processing' : 'step-pending'}">
+                                        ${item.progresso > 60 ? '✓ Concluído' : item.progresso > 40 ? '⏳ Processando' : '⏸ Aguardando'}
+                                    </span>
+                                </div>
+                                <div class="analysis-step">
+                                    <span class="step-name">✂️ Geração de Cortes</span>
+                                    <span class="step-status ${item.progresso > 80 ? 'step-complete' : item.progresso > 60 ? 'step-processing' : 'step-pending'}">
+                                        ${item.progresso > 80 ? '✓ Concluído' : item.progresso > 60 ? '⏳ Processando' : '⏸ Aguardando'}
+                                    </span>
+                                </div>
+                                <div class="analysis-step">
+                                    <span class="step-name">⭐ Geração de Highlights</span>
+                                    <span class="step-status ${item.progresso > 95 ? 'step-complete' : item.progresso > 80 ? 'step-processing' : 'step-pending'}">
+                                        ${item.progresso > 95 ? '✓ Concluído' : item.progresso > 80 ? '⏳ Processando' : '⏸ Aguardando'}
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${item.progresso}%"></div>
+                            </div>
+                            <div style="text-align: center; font-size: 14px; color: #666;">
+                                Progresso da IA: ${item.progresso}%
+                            </div>
+                        ` : ''}
+                        
+                        ${item.status === 'CONCLUIDO' ? `
+                            <div style="text-align: center; padding: 15px; background: #d4edda; border-radius: 8px; color: #155724;">
+                                🎉 Análise completa! Highlights e cortes detectados<br>
+                                <small>Vídeo processado e enviado para fila REC</small>
+                            </div>
+                        ` : ''}
+                        
+                        <div style="margin-top: 15px; font-size: 14px; color: #666;">
+                            <strong>Operações:</strong> Detecção de cenas, Cortes automáticos, Highlights |
+                            <strong>Prioridade:</strong> ${item.prioridade}
+                            ${item.erro ? `<br><span style="color: #dc3545;"><strong>Erro:</strong> ${item.erro}</span>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function gerarHighlights(item) {
+            // Simular geração de highlights
+            const highlights = [
+                {
+                    tempo: '00:02:15',
+                    descricao: 'Momento de alta emoção detectado',
+                    confianca: 95
+                },
+                {
+                    tempo: '00:05:30',
+                    descricao: 'Sequência de ação identificada',
+                    confianca: 87
+                },
+                {
+                    tempo: '00:08:45',
+                    descricao: 'Pico de áudio - possível aplauso',
+                    confianca: 92
+                },
+                {
+                    tempo: '00:12:10',
+                    descricao: 'Mudança significativa de cena',
+                    confianca: 78
+                }
+            ];
+
+            highlightsDetectados.push({
+                itemId: item.id,
+                highlights: highlights
+            });
+
+            atualizarHighlights();
+        }
+
+        function atualizarHighlights() {
+            const container = document.getElementById('highlights-container');
+            
+            if (highlightsDetectados.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        Aguardando análise de vídeos
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            highlightsDetectados.slice(-1).forEach(grupo => {
+                grupo.highlights.forEach(highlight => {
+                    html += `
+                        <div class="highlight-item">
+                            <div class="highlight-time">${highlight.tempo}</div>
+                            <div class="highlight-desc">${highlight.descricao}</div>
+                            <div class="highlight-confidence">Confiança: ${highlight.confianca}%</div>
+                        </div>
+                    `;
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+
+        async function pausarFila() {
+            try {
+                const endpoint = iaAtiva ? '/api/filas/CORTES/pausar' : '/api/filas/CORTES/reativar';
+                const response = await fetch(endpoint, { method: 'POST' });
+                
+                if (response.ok) {
+                    const btn = event.target;
+                    btn.textContent = iaAtiva ? 'Ativar IA' : 'Pausar IA';
+                    btn.className = iaAtiva ? 'btn btn-warning' : 'btn btn-primary';
+                }
+            } catch (error) {
+                console.error('Erro ao pausar/reativar IA:', error);
+            }
+        }
+
+        function configurarIA() {
+            const configuracoes = [
+                'Sensibilidade de detecção de cenas: Alta',
+                'Threshold de highlights: 80%',
+                'Detecção de faces: Ativada',
+                'Análise de áudio: Ativada',
+                'Cortes automáticos: Ativados'
+            ];
+            
+            alert('Configurações da IA:\n\n' + configuracoes.join('\n'));
+        }
+
+        async function limparFila() {
+            try {
+                const response = await fetch('/api/filas/CORTES/limpar', { method: 'POST' });
+                if (response.ok) {
+                    highlightsDetectados = [];
+                    atualizarHighlights();
+                    atualizarFila();
+                }
+            } catch (error) {
+                console.error('Erro ao limpar fila:', error);
+            }
+        }
+
+        async function atualizarFila() {
+            try {
+                const response = await fetch('/api/filas/CORTES');
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    atualizarStatusFila(data.fila);
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar fila:', error);
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarFila();
+            
+            // Atualizar a cada 10 segundos
+            setInterval(atualizarFila, 10000);
+            
+            // Simular atividade da IA
+            setInterval(() => {
+                if (iaAtiva) {
+                    const operations = document.querySelectorAll('.operation-card');
+                    operations.forEach(op => {
+                        if (Math.random() > 0.7) {
+                            op.style.borderColor = '#8e44ad';
+                            op.style.backgroundColor = '#f3e5f5';
+                            setTimeout(() => {
+                                op.style.borderColor = '#dee2e6';
+                                op.style.backgroundColor = '#f8f9fa';
+                            }, 2000);
+                        }
+                    });
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 

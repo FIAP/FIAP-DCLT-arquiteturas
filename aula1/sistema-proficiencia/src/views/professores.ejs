@@ -1,0 +1,21 @@
+<%- include('header') %>
+<h2>Professores do Sistema</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% professores.forEach(function(professor) { %>
+      <tr>
+        <td><%= professor.id %></td>
+        <td><%= professor.nome %></td>
+        <td><%= professor.email %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('footer') %> 

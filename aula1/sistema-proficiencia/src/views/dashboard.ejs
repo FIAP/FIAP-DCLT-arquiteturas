@@ -1,0 +1,27 @@
+<%- include('header') %>
+<h2>Bem-vindo, <%= user.userName %>!</h2>
+<p>Seu perfil: <strong><%= user.role %></strong></p>
+
+<% if (user.role === 'ADM') { %>
+  <ul>
+    <li><a href="/usuarios">Gerenciar Usuários</a></li>
+    <li><a href="/professores">Gerenciar Professores</a></li>
+    <li><a href="/empresas">Gerenciar Empresas</a></li>
+    <li><a href="/candidatos">Gerenciar Candidatos</a></li>
+    <li><a href="/agendamentos">Gerenciar Agendamentos</a></li>
+  </ul>
+<% } else if (user.role === 'PROFESSOR') { %>
+  <ul>
+    <li><a href="/agendamentos/professor">Meus Agendamentos</a></li>
+  </ul>
+<% } else if (user.role === 'EMPRESA') { %>
+  <ul>
+    <li><a href="/candidatos/empresa">Meus Candidatos</a></li>
+    <li><a href="/agendamentos/empresa">Agendamentos dos meus candidatos</a></li>
+  </ul>
+<% } else if (user.role === 'CANDIDATO') { %>
+  <ul>
+    <li><a href="/agendamentos/candidato">Meus Agendamentos</a></li>
+  </ul>
+<% } %>
+<%- include('footer') %> 

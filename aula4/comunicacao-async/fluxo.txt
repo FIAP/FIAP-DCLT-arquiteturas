@@ -1,0 +1,8 @@
+docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+
+# 2. Executar exemplo
+cd comunicacao-async
+npm install
+npm run setup      # Configurar filas
+npm run consumidor # Terminal 1 (aguarda mensagens)
+npm run produtor   # Terminal 2 (envia mensagens)

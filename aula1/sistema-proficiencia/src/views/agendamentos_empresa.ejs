@@ -1,0 +1,27 @@
+<%- include('header') %>
+<h2>Agendamentos dos Meus Candidatos</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Professor ID</th>
+      <th>Candidato ID</th>
+      <th>Data</th>
+      <th>Feedback</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% agendamentos.forEach(function(ag) { %>
+      <tr>
+        <td><%= ag.id %></td>
+        <td><%= ag.professorId %></td>
+        <td><%= ag.candidatoId %></td>
+        <td><%= ag.dataAgendamento %></td>
+        <td><%= ag.feedback %></td>
+        <td><%= ag.status %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('footer') %> 

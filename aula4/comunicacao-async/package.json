@@ -1,0 +1,17 @@
+{
+  "name": "comunicacao-async-exemplo",
+  "version": "1.0.0",
+  "description": "Exemplo simples de comunicação assíncrona usando RabbitMQ",
+  "main": "produtor.js",
+  "scripts": {
+    "produtor": "node produtor.js",
+    "consumidor": "node consumidor.js",
+    "setup": "node setup.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.3"
+  },
+  "keywords": ["rabbitmq", "async", "messaging", "queue", "exemplo"],
+  "author": "",
+  "license": "MIT"
+} 

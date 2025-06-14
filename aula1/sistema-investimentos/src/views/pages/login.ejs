@@ -1,0 +1,146 @@
+<%- include('../layout/base', { body: `
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 col-md-7">
+                <div class="card shadow-lg">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <i class="fas fa-chart-line text-primary" style="font-size: 3rem;"></i>
+                            <h2 class="mt-3 mb-1">Entrar</h2>
+                            <p class="text-muted">Acesse sua conta no sistema</p>
+                        </div>
+
+                        <form id="loginForm" class="needs-validation" novalidate>
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control" id="email" placeholder="Email" required>
+                                <label for="email">
+                                    <i class="fas fa-envelope me-2"></i>Email
+                                </label>
+                                <div class="invalid-feedback">
+                                    Por favor, insira um email válido.
+                                </div>
+                            </div>
+
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="password" placeholder="Senha" required>
+                                <label for="password">
+                                    <i class="fas fa-lock me-2"></i>Senha
+                                </label>
+                                <div class="invalid-feedback">
+                                    Por favor, insira sua senha.
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="rememberMe">
+                                    <label class="form-check-label" for="rememberMe">
+                                        Lembrar de mim
+                                    </label>
+                                </div>
+                                <a href="#" class="text-decoration-none">Esqueci minha senha</a>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 mb-3" id="loginBtn">
+                                <i class="fas fa-sign-in-alt me-2"></i>
+                                Entrar
+                            </button>
+                        </form>
+
+                        <div class="text-center">
+                            <p class="mb-0">Não tem uma conta? 
+                                <a href="/register" class="text-decoration-none fw-bold">Cadastre-se</a>
+                            </p>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Acesso seguro com autenticação JWT
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Demo Credentials Card -->
+                <div class="card mt-4 bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-info-circle text-info me-2"></i>
+                            Credenciais de Demonstração
+                        </h6>
+                        <p class="card-text small mb-2">
+                            Para testar o sistema, use estas credenciais:
+                        </p>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <code class="small">admin@fiap.com.br</code>
+                            </div>
+                            <div class="col-md-6">
+                                <code class="small">senha123</code>
+                            </div>
+                        </div>
+                        <button class="btn btn-sm btn-outline-info mt-2" onclick="fillDemo()">
+                            <i class="fas fa-magic me-1"></i> Preencher
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const form = e.target;
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return;
+            }
+
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            
+            // Mostrar loading
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Entrando...';
+            loginBtn.disabled = true;
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const result = await window.InvestmentApp.login(email, password);
+                
+                if (!result.success) {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                // Error handling is done in the login method
+                console.error('Login error:', error);
+            } finally {
+                // Restaurar botão
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+            }
+        });
+
+        function fillDemo() {
+            document.getElementById('email').value = 'admin@fiap.com.br';
+            document.getElementById('password').value = 'senha123';
+            
+            // Feedback visual
+            window.Utils.showNotification('Credenciais de demo preenchidas!', 'info');
+        }
+
+        // Verificar se já está logado
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                window.location.href = '/dashboard';
+            }
+        });
+    </script>
+` }) %> 

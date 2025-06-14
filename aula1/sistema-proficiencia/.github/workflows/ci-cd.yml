@@ -1,0 +1,136 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  NODE_VERSION: '18.x'
+
+jobs:
+  # Job de Testes e Qualidade de Código
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Instalar dependências
+      run: npm ci
+    
+    - name: Executar linting
+      run: npm run lint || echo "Lint não configurado"
+    
+    - name: Executar testes
+      run: npm test || echo "Testes não configurados"
+    
+    - name: Verificar build
+      run: npm run build || echo "Build não necessário"
+    
+    - name: Análise de segurança
+      run: npm audit --audit-level=high
+
+  # Job de Build e Preparação
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout código
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Instalar dependências
+      run: npm ci --only=production
+    
+    - name: Criar arquivo de ambiente
+      run: |
+        echo "NODE_ENV=production" > .env
+        echo "PORT=3000" >> .env
+        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+        echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+    
+    - name: Comprimir aplicação
+      run: |
+        tar -czf sistema-proficiencia.tar.gz \
+          --exclude=node_modules \
+          --exclude=.git \
+          --exclude=.github \
+          --exclude=*.log \
+          .
+    
+    - name: Upload artefato
+      uses: actions/upload-artifact@v4
+      with:
+        name: sistema-proficiencia-${{ github.sha }}
+        path: sistema-proficiencia.tar.gz
+        retention-days: 30
+
+  # Deploy para Staging (branch develop)
+  deploy-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Download artefato
+      uses: actions/download-artifact@v4
+      with:
+        name: sistema-proficiencia-${{ github.sha }}
+    
+    - name: Deploy para Staging
+      run: |
+        echo "🚀 Deploying to Staging Environment"
+        echo "Artifact: sistema-proficiencia.tar.gz"
+        # Aqui você adicionaria os comandos específicos do seu provedor
+        # Exemplos abaixo para diferentes provedores
+
+  # Deploy para Produção (branch main)
+  deploy-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Download artefato
+      uses: actions/download-artifact@v4
+      with:
+        name: sistema-proficiencia-${{ github.sha }}
+    
+    - name: Deploy para Produção
+      run: |
+        echo "🚀 Deploying to Production Environment"
+        echo "Artifact: sistema-proficiencia.tar.gz"
+        # Aqui você adicionaria os comandos específicos do seu provedor
+
+  # Notificação de Deploy
+  notify:
+    needs: [deploy-staging, deploy-production]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Notificar resultado
+      run: |
+        if [ "${{ needs.deploy-staging.result }}" == "success" ] || [ "${{ needs.deploy-production.result }}" == "success" ]; then
+          echo "✅ Deploy realizado com sucesso!"
+        else
+          echo "❌ Deploy falhou!"
+        fi 

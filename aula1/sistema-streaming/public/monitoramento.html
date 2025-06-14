@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoramento - Central de Controle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a252f 0%, #2d3748 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu a {
+            color: #1a252f;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            background: #1a252f;
+            color: white;
+        }
+
+        .monitoring-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .main-dashboard {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .alerts-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #e74c3c;
+        }
+
+        .system-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .overview-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #dee2e6;
+            transition: all 0.3s;
+        }
+
+        .overview-card.online {
+            border-color: #28a745;
+            background: #f0f9f0;
+        }
+
+        .overview-card.warning {
+            border-color: #ffc107;
+            background: #fffbf0;
+        }
+
+        .overview-card.error {
+            border-color: #dc3545;
+            background: #f8f0f0;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .card-status {
+            font-size: 14px;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 12px;
+        }
+
+        .status-online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .queues-status {
+            margin-bottom: 30px;
+        }
+
+        .queue-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .queue-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #007bff;
+        }
+
+        .queue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .queue-name {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .queue-count {
+            background: #007bff;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+
+        .queue-metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .queue-metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .performance-charts {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            height: 200px;
+            position: relative;
+        }
+
+        .chart-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(45deg, #e9ecef 25%, transparent 25%),
+                        linear-gradient(-45deg, #e9ecef 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #e9ecef 75%),
+                        linear-gradient(-45deg, transparent 75%, #e9ecef 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .alert-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .alert-level {
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .alert-high {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .alert-medium {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .alert-low {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .alert-message {
+            color: #495057;
+            font-size: 14px;
+        }
+
+        .alert-time {
+            color: #666;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .system-logs {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .log-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .log-filters {
+            display: flex;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+        .log-container {
+            background: #1a1a1a;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-timestamp {
+            color: #888;
+        }
+
+        .log-level-info {
+            color: #00ff00;
+        }
+
+        .log-level-warn {
+            color: #ffff00;
+        }
+
+        .log-level-error {
+            color: #ff0000;
+        }
+
+        .log-component {
+            color: #00bfff;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        @media (max-width: 1200px) {
+            .monitoring-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .system-overview {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .queue-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Monitoramento - Central de Controle</h1>
+            <p>Supervisão em tempo real de toda a arquitetura de streaming</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="/rec-front.html">REC Front</a>
+            <a href="/sistema-grava.html">Sistema Grava</a>
+            <a href="/fila-uol.html">Fila UOL</a>
+            <a href="/fila-youtube.html">Fila YouTube</a>
+            <a href="/maquina-cortes.html">Máquina Cortes</a>
+            <a href="/filas-rec.html">Filas REC</a>
+            <a href="/monitoramento.html" class="active">Monitoramento</a>
+        </div>
+
+        <!-- Grid Principal -->
+        <div class="monitoring-grid">
+            <!-- Dashboard Principal -->
+            <div class="main-dashboard">
+                <h3>Visão Geral do Sistema</h3>
+                
+                <!-- Visão Geral dos Sistemas -->
+                <div class="system-overview">
+                    <div class="overview-card online" id="rec-front-status">
+                        <div class="card-icon">📹</div>
+                        <div class="card-title">REC Front</div>
+                        <div class="card-status status-online">Online</div>
+                    </div>
+                    
+                    <div class="overview-card online" id="grava-hd-status">
+                        <div class="card-icon">💿</div>
+                        <div class="card-title">Grava HD</div>
+                        <div class="card-status status-online">Ativo</div>
+                    </div>
+                    
+                    <div class="overview-card online" id="grava-extra-status">
+                        <div class="card-icon">📀</div>
+                        <div class="card-title">Grava Extra</div>
+                        <div class="card-status status-online">Standby</div>
+                    </div>
+                    
+                    <div class="overview-card online" id="ia-cortes-status">
+                        <div class="card-icon">🤖</div>
+                        <div class="card-title">IA Cortes</div>
+                        <div class="card-status status-online">Processando</div>
+                    </div>
+                </div>
+
+                <!-- Status das Filas -->
+                <div class="queues-status">
+                    <h4>Status das Filas de Processamento</h4>
+                    <div class="queue-grid">
+                        <div class="queue-card" style="border-left-color: #ff6b35;">
+                            <div class="queue-header">
+                                <div class="queue-name">Fila UOL</div>
+                                <div class="queue-count" id="uol-count">0</div>
+                            </div>
+                            <div class="queue-metrics">
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="uol-processing">0</div>
+                                    <div class="metric-label">Processando</div>
+                                </div>
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="uol-completed">0</div>
+                                    <div class="metric-label">Concluídos</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="queue-card" style="border-left-color: #ff0000;">
+                            <div class="queue-header">
+                                <div class="queue-name">Fila YouTube</div>
+                                <div class="queue-count" id="youtube-count">0</div>
+                            </div>
+                            <div class="queue-metrics">
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="youtube-processing">0</div>
+                                    <div class="metric-label">Processando</div>
+                                </div>
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="youtube-completed">0</div>
+                                    <div class="metric-label">Enviados</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="queue-card" style="border-left-color: #8e44ad;">
+                            <div class="queue-header">
+                                <div class="queue-name">Máquina Cortes</div>
+                                <div class="queue-count" id="cortes-count">0</div>
+                            </div>
+                            <div class="queue-metrics">
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="cortes-processing">0</div>
+                                    <div class="metric-label">Analisando</div>
+                                </div>
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="cortes-completed">0</div>
+                                    <div class="metric-label">Editados</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="queue-card" style="border-left-color: #2c3e50;">
+                            <div class="queue-header">
+                                <div class="queue-name">Filas REC</div>
+                                <div class="queue-count" id="rec-count">0</div>
+                            </div>
+                            <div class="queue-metrics">
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="rec-processing">0</div>
+                                    <div class="metric-label">Backup/Arquivo</div>
+                                </div>
+                                <div class="queue-metric">
+                                    <div class="metric-value" id="rec-completed">0</div>
+                                    <div class="metric-label">Arquivados</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Painel de Alertas -->
+            <div class="alerts-panel">
+                <h3>Alertas do Sistema</h3>
+                <div id="alerts-container">
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span class="alert-level alert-low">INFO</span>
+                            <span>Sistema</span>
+                        </div>
+                        <div class="alert-message">Sistema de monitoramento iniciado</div>
+                        <div class="alert-time">Agora</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos de Performance -->
+        <div class="performance-charts">
+            <h3>Gráficos de Performance</h3>
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Throughput de Processamento</div>
+                    <div class="chart-placeholder">Gráfico de linha temporal</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Utilização de Recursos</div>
+                    <div class="chart-placeholder">Gráfico de barras CPU/RAM</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Latência das Filas</div>
+                    <div class="chart-placeholder">Gráfico de área empilhada</div>
+                </div>
+                
+                <div class="chart-container">
+                    <div class="chart-title">Taxa de Erro</div>
+                    <div class="chart-placeholder">Gráfico de pizza por sistema</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logs do Sistema -->
+        <div class="system-logs">
+            <div class="log-controls">
+                <h3>Logs do Sistema</h3>
+                <div style="display: flex; gap: 15px;">
+                    <div class="log-filters">
+                        <button class="filter-btn active" onclick="filtrarLogs('all')">Todos</button>
+                        <button class="filter-btn" onclick="filtrarLogs('error')">Erros</button>
+                        <button class="filter-btn" onclick="filtrarLogs('warn')">Avisos</button>
+                        <button class="filter-btn" onclick="filtrarLogs('info')">Info</button>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" onclick="exportarLogs()">Exportar</button>
+                        <button class="btn btn-warning" onclick="limparLogs()">Limpar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="log-container" id="system-logs">
+                <div class="log-entry">
+                    <span class="log-timestamp">[00:00:00]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    <span class="log-component">[MONITOR]</span>
+                    Sistema de monitoramento inicializado
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        let alertas = [];
+        let logs = [];
+        let filtroAtivo = 'all';
+
+        // Event listeners do Socket.IO
+        socket.on('sistema-status', function(data) {
+            atualizarStatusGeral(data);
+        });
+
+        socket.on('alerta', function(data) {
+            adicionarAlerta(data);
+        });
+
+        socket.on('log', function(data) {
+            adicionarLog(data.nivel, data.componente, data.mensagem);
+        });
+
+        socket.on('gravacao-iniciada', function(data) {
+            adicionarLog('info', 'GRAVACAO', `Nova gravação iniciada: ${data.titulo}`);
+        });
+
+        socket.on('gravacao-finalizada', function(data) {
+            adicionarLog('info', 'GRAVACAO', `Gravação finalizada: ${data.titulo}`);
+        });
+
+        socket.on('item-atualizado', function(data) {
+            adicionarLog('info', data.fila, `Item ${data.item.id.substring(0, 8)} atualizado: ${data.item.progresso}%`);
+        });
+
+        function atualizarStatusGeral(data) {
+            // Atualizar contadores das filas
+            if (data.filas) {
+                Object.keys(data.filas).forEach(nomeFila => {
+                    const fila = data.filas[nomeFila];
+                    const stats = fila.estatisticas;
+                    
+                    const elementCount = document.getElementById(`${nomeFila.toLowerCase()}-count`);
+                    const elementProcessing = document.getElementById(`${nomeFila.toLowerCase()}-processing`);
+                    const elementCompleted = document.getElementById(`${nomeFila.toLowerCase()}-completed`);
+                    
+                    if (elementCount) elementCount.textContent = stats.total;
+                    if (elementProcessing) elementProcessing.textContent = stats.processando;
+                    if (elementCompleted) elementCompleted.textContent = stats.concluidos;
+                    
+                    // Verificar alertas baseados nas métricas
+                    verificarAlertas(nomeFila, stats);
+                });
+            }
+
+            // Atualizar status dos sistemas
+            atualizarStatusSistemas(data);
+        }
+
+        function atualizarStatusSistemas(data) {
+            // Simular status baseado nos dados
+            const sistemas = ['rec-front', 'grava-hd', 'grava-extra', 'ia-cortes'];
+            
+            sistemas.forEach(sistema => {
+                const elemento = document.getElementById(`${sistema}-status`);
+                const statusElement = elemento.querySelector('.card-status');
+                
+                // Lógica para determinar status baseada nos dados
+                let status = 'online';
+                let texto = 'Online';
+                let classeCard = 'online';
+                
+                if (data.filas) {
+                    const totalProcessando = Object.values(data.filas)
+                        .reduce((sum, fila) => sum + fila.estatisticas.processando, 0);
+                    
+                    if (totalProcessando > 5) {
+                        status = 'warning';
+                        texto = 'Sobrecarga';
+                        classeCard = 'warning';
+                    }
+                }
+                
+                elemento.className = `overview-card ${classeCard}`;
+                statusElement.className = `card-status status-${status}`;
+                statusElement.textContent = texto;
+            });
+        }
+
+        function verificarAlertas(nomeFila, stats) {
+            // Alerta se fila muito cheia
+            if (stats.total > 10) {
+                adicionarAlerta({
+                    nivel: 'medium',
+                    componente: nomeFila,
+                    mensagem: `Fila ${nomeFila} com ${stats.total} itens - possível gargalo`,
+                    timestamp: new Date()
+                });
+            }
+            
+            // Alerta se muitos erros
+            if (stats.erros > 2) {
+                adicionarAlerta({
+                    nivel: 'high',
+                    componente: nomeFila,
+                    mensagem: `${stats.erros} erros detectados na fila ${nomeFila}`,
+                    timestamp: new Date()
+                });
+            }
+        }
+
+        function adicionarAlerta(alerta) {
+            alertas.unshift(alerta);
+            
+            // Manter apenas os últimos 20 alertas
+            if (alertas.length > 20) {
+                alertas = alertas.slice(0, 20);
+            }
+            
+            atualizarListaAlertas();
+            adicionarLog('warn', 'ALERTA', alerta.mensagem);
+        }
+
+        function atualizarListaAlertas() {
+            const container = document.getElementById('alerts-container');
+            
+            if (alertas.length === 0) {
+                container.innerHTML = `
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span class="alert-level alert-low">INFO</span>
+                            <span>Sistema</span>
+                        </div>
+                        <div class="alert-message">Nenhum alerta ativo</div>
+                        <div class="alert-time">-</div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            alertas.slice(0, 10).forEach(alerta => {
+                const nivelClass = {
+                    'high': 'alert-high',
+                    'medium': 'alert-medium',
+                    'low': 'alert-low'
+                }[alerta.nivel] || 'alert-low';
+                
+                const tempo = formatarTempo(alerta.timestamp);
+                
+                html += `
+                    <div class="alert-item">
+                        <div class="alert-header">
+                            <span class="alert-level ${nivelClass}">${alerta.nivel.toUpperCase()}</span>
+                            <span>${alerta.componente}</span>
+                        </div>
+                        <div class="alert-message">${alerta.mensagem}</div>
+                        <div class="alert-time">${tempo}</div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        function adicionarLog(nivel, componente, mensagem) {
+            const log = {
+                timestamp: new Date(),
+                nivel: nivel,
+                componente: componente,
+                mensagem: mensagem
+            };
+            
+            logs.unshift(log);
+            
+            // Manter apenas os últimos 100 logs
+            if (logs.length > 100) {
+                logs = logs.slice(0, 100);
+            }
+            
+            atualizarLogsDisplay();
+        }
+
+        function atualizarLogsDisplay() {
+            const container = document.getElementById('system-logs');
+            
+            const logsFiltrados = filtroAtivo === 'all' ? 
+                logs : logs.filter(log => log.nivel === filtroAtivo);
+            
+            let html = '';
+            logsFiltrados.slice(0, 50).forEach(log => {
+                const timestamp = log.timestamp.toLocaleTimeString();
+                const nivelClass = `log-level-${log.nivel}`;
+                
+                html += `
+                    <div class="log-entry">
+                        <span class="log-timestamp">[${timestamp}]</span>
+                        <span class="${nivelClass}">[${log.nivel.toUpperCase()}]</span>
+                        <span class="log-component">[${log.componente}]</span>
+                        ${log.mensagem}
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            container.scrollTop = 0; // Mostrar logs mais recentes no topo
+        }
+
+        function filtrarLogs(filtro) {
+            filtroAtivo = filtro;
+            
+            // Atualizar botões
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            atualizarLogsDisplay();
+        }
+
+        function exportarLogs() {
+            const logsTexto = logs.map(log => 
+                `[${log.timestamp.toLocaleString()}] [${log.nivel.toUpperCase()}] [${log.componente}] ${log.mensagem}`
+            ).join('\n');
+            
+            const blob = new Blob([logsTexto], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sistema-logs-${new Date().toISOString().split('T')[0]}.txt`;
+            a.click();
+            
+            URL.revokeObjectURL(url);
+        }
+
+        function limparLogs() {
+            if (confirm('Deseja limpar todos os logs?')) {
+                logs = [];
+                atualizarLogsDisplay();
+                adicionarLog('info', 'MONITOR', 'Logs limpos pelo usuário');
+            }
+        }
+
+        function formatarTempo(timestamp) {
+            const agora = new Date();
+            const diferenca = agora - timestamp;
+            
+            if (diferenca < 60000) { // menos de 1 minuto
+                return 'Agora';
+            } else if (diferenca < 3600000) { // menos de 1 hora
+                return `${Math.floor(diferenca / 60000)}m atrás`;
+            } else {
+                return `${Math.floor(diferenca / 3600000)}h atrás`;
+            }
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carregar dados iniciais
+            setTimeout(() => {
+                adicionarLog('info', 'MONITOR', 'Interface de monitoramento carregada');
+                adicionarLog('info', 'SISTEMA', 'Conectando com componentes...');
+                
+                // Simular conexão com sistemas
+                setTimeout(() => {
+                    adicionarLog('info', 'REC-FRONT', 'Interface de gravação conectada');
+                    adicionarLog('info', 'GRAVA-HD', 'Sistema de gravação HD online');
+                    adicionarLog('info', 'IA-CORTES', 'Sistema de IA inicializado');
+                }, 2000);
+            }, 1000);
+            
+            // Atualizar dados a cada 5 segundos
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/api/monitoramento/performance');
+                    const data = await response.json();
+                    
+                    if (data.sucesso) {
+                        atualizarStatusGeral(data);
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar dados de monitoramento:', error);
+                    adicionarLog('error', 'MONITOR', 'Erro ao conectar com API de monitoramento');
+                }
+            }, 5000);
+            
+            // Simular alertas aleatórios
+            setInterval(() => {
+                if (Math.random() > 0.9) {
+                    const alertasSimulados = [
+                        { nivel: 'low', componente: 'SISTEMA', mensagem: 'Limpeza automática de arquivos temporários' },
+                        { nivel: 'medium', componente: 'STORAGE', mensagem: 'Espaço em disco em 75%' },
+                        { nivel: 'low', componente: 'BACKUP', mensagem: 'Backup automático concluído' }
+                    ];
+                    
+                    const alertaAleatorio = alertasSimulados[Math.floor(Math.random() * alertasSimulados.length)];
+                    alertaAleatorio.timestamp = new Date();
+                    adicionarAlerta(alertaAleatorio);
+                }
+            }, 15000);
+        });
+    </script>
+</body>
+</html> 

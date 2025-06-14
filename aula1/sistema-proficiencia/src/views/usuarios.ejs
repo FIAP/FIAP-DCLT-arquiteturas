@@ -1,0 +1,23 @@
+<%- include('header') %>
+<h2>Usuários do Sistema</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Usuário</th>
+      <th>Email</th>
+      <th>Perfil</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% usuarios.forEach(function(usuario) { %>
+      <tr>
+        <td><%= usuario.id %></td>
+        <td><%= usuario.userName %></td>
+        <td><%= usuario.email %></td>
+        <td><%= usuario.role %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('footer') %> 

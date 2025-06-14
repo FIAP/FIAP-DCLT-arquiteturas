@@ -1,0 +1,497 @@
+<%- include('../layout/base', { body: `
+    <div class="container py-4">
+        <div class="row">
+            <!-- Sidebar do Perfil -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <div class="position-relative mb-3">
+                            <img src="https://ui-avatars.com/api/?name=Admin+User&background=3498db&color=fff&size=120" 
+                                 class="rounded-circle" alt="Avatar" width="120" height="120">
+                            <button class="btn btn-sm btn-primary position-absolute bottom-0 end-0 rounded-circle" 
+                                    style="width: 32px; height: 32px;" title="Alterar foto">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <h5 class="mb-1">Admin User</h5>
+                        <p class="text-muted small">admin@fiap.com.br</p>
+                        <span class="badge bg-success">Conta Verificada</span>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Resumo da Conta
+                        </h6>
+                        <div class="mb-3">
+                            <small class="text-muted">Membro desde</small>
+                            <div>Janeiro 2024</div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Perfil de Risco</small>
+                            <div>
+                                <span class="badge bg-warning">Moderado</span>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <small class="text-muted">Total Investido</small>
+                            <div class="h6 text-success">R$ 125.480,00</div>
+                        </div>
+                        <div>
+                            <small class="text-muted">Transações</small>
+                            <div>348 operações</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Principal -->
+            <div class="col-lg-9">
+                <!-- Navegação por Abas -->
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="personal-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#personal" type="button" role="tab">
+                                    <i class="fas fa-user me-2"></i>
+                                    Dados Pessoais
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="security-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#security" type="button" role="tab">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    Segurança
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="preferences-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#preferences" type="button" role="tab">
+                                    <i class="fas fa-cog me-2"></i>
+                                    Preferências
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="notifications-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#notifications" type="button" role="tab">
+                                    <i class="fas fa-bell me-2"></i>
+                                    Notificações
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="tab-content" id="profileTabsContent">
+                            <!-- Aba Dados Pessoais -->
+                            <div class="tab-pane fade show active" id="personal" role="tabpanel">
+                                <h5 class="mb-4">Informações Pessoais</h5>
+                                
+                                <form id="personalForm" class="needs-validation" novalidate>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="firstName" 
+                                                       value="Admin" required>
+                                                <label for="firstName">Nome</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="lastName" 
+                                                       value="User" required>
+                                                <label for="lastName">Sobrenome</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" class="form-control" id="email" 
+                                                       value="admin@fiap.com.br" required>
+                                                <label for="email">Email</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="tel" class="form-control" id="phone" 
+                                                       value="(11) 99999-9999">
+                                                <label for="phone">Telefone</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="cpf" 
+                                                       value="123.456.789-00" readonly>
+                                                <label for="cpf">CPF</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="date" class="form-control" id="birthDate" 
+                                                       value="1990-01-01">
+                                                <label for="birthDate">Data de Nascimento</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-floating mb-3">
+                                        <select class="form-select" id="riskProfile">
+                                            <option value="conservador">Conservador</option>
+                                            <option value="moderado" selected>Moderado</option>
+                                            <option value="arrojado">Arrojado</option>
+                                        </select>
+                                        <label for="riskProfile">Perfil de Risco</label>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>
+                                        Salvar Alterações
+                                    </button>
+                                </form>
+                            </div>
+
+                            <!-- Aba Segurança -->
+                            <div class="tab-pane fade" id="security" role="tabpanel">
+                                <h5 class="mb-4">Configurações de Segurança</h5>
+
+                                <!-- Alterar Senha -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-key me-2"></i>
+                                            Alterar Senha
+                                        </h6>
+                                        
+                                        <form id="passwordForm">
+                                            <div class="form-floating mb-3">
+                                                <input type="password" class="form-control" id="currentPassword" required>
+                                                <label for="currentPassword">Senha Atual</label>
+                                            </div>
+                                            
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="password" class="form-control" id="newPassword" 
+                                                               required minlength="6">
+                                                        <label for="newPassword">Nova Senha</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-floating mb-3">
+                                                        <input type="password" class="form-control" id="confirmPassword" 
+                                                               required>
+                                                        <label for="confirmPassword">Confirmar Nova Senha</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-warning">
+                                                <i class="fas fa-sync-alt me-2"></i>
+                                                Alterar Senha
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                                <!-- Autenticação 2FA -->
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="card-title mb-1">
+                                                    <i class="fas fa-mobile-alt me-2"></i>
+                                                    Autenticação em Duas Etapas
+                                                </h6>
+                                                <p class="text-muted small mb-0">Adicione uma camada extra de segurança</p>
+                                            </div>
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="twoFactorAuth">
+                                                <label class="form-check-label" for="twoFactorAuth">Ativar</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sessões Ativas -->
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-laptop me-2"></i>
+                                            Sessões Ativas
+                                        </h6>
+                                        
+                                        <div class="list-group list-group-flush">
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-desktop text-primary me-2"></i>
+                                                    <strong>Navegador Atual</strong>
+                                                    <br>
+                                                    <small class="text-muted">Chrome • São Paulo, Brasil • Agora</small>
+                                                </div>
+                                                <span class="badge bg-success">Atual</span>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fas fa-mobile text-secondary me-2"></i>
+                                                    <strong>iPhone</strong>
+                                                    <br>
+                                                    <small class="text-muted">Safari • São Paulo, Brasil • 2 horas atrás</small>
+                                                </div>
+                                                <button class="btn btn-sm btn-outline-danger">Encerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Aba Preferências -->
+                            <div class="tab-pane fade" id="preferences" role="tabpanel">
+                                <h5 class="mb-4">Preferências do Sistema</h5>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-palette me-2"></i>
+                                                    Aparência
+                                                </h6>
+                                                
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="radio" name="theme" 
+                                                           id="lightTheme" checked>
+                                                    <label class="form-check-label" for="lightTheme">
+                                                        Tema Claro
+                                                    </label>
+                                                </div>
+                                                <div class="form-check mb-2">
+                                                    <input class="form-check-input" type="radio" name="theme" 
+                                                           id="darkTheme">
+                                                    <label class="form-check-label" for="darkTheme">
+                                                        Tema Escuro
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="radio" name="theme" 
+                                                           id="autoTheme">
+                                                    <label class="form-check-label" for="autoTheme">
+                                                        Automático
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h6 class="card-title">
+                                                    <i class="fas fa-globe me-2"></i>
+                                                    Regionalização
+                                                </h6>
+                                                
+                                                <div class="form-floating mb-3">
+                                                    <select class="form-select" id="language">
+                                                        <option value="pt-BR" selected>Português (Brasil)</option>
+                                                        <option value="en-US">English (US)</option>
+                                                        <option value="es-ES">Español</option>
+                                                    </select>
+                                                    <label for="language">Idioma</label>
+                                                </div>
+                                                
+                                                <div class="form-floating">
+                                                    <select class="form-select" id="currency">
+                                                        <option value="BRL" selected>Real (R$)</option>
+                                                        <option value="USD">Dólar ($)</option>
+                                                        <option value="EUR">Euro (€)</option>
+                                                    </select>
+                                                    <label for="currency">Moeda</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-chart-line me-2"></i>
+                                            Dashboard
+                                        </h6>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           id="showPortfolioChart" checked>
+                                                    <label class="form-check-label" for="showPortfolioChart">
+                                                        Gráfico de Performance
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           id="showAssetTable" checked>
+                                                    <label class="form-check-label" for="showAssetTable">
+                                                        Tabela de Ativos
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" 
+                                                           id="showRecentTransactions" checked>
+                                                    <label class="form-check-label" for="showRecentTransactions">
+                                                        Transações Recentes
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary mt-3">
+                                    <i class="fas fa-save me-2"></i>
+                                    Salvar Preferências
+                                </button>
+                            </div>
+
+                            <!-- Aba Notificações -->
+                            <div class="tab-pane fade" id="notifications" role="tabpanel">
+                                <h5 class="mb-4">Configurações de Notificação</h5>
+
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-envelope me-2"></i>
+                                            Notificações por Email
+                                        </h6>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="emailTransactions" checked>
+                                            <label class="form-check-label" for="emailTransactions">
+                                                Confirmação de transações
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="emailDividends" checked>
+                                            <label class="form-check-label" for="emailDividends">
+                                                Pagamento de dividendos
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="emailMarketNews">
+                                            <label class="form-check-label" for="emailMarketNews">
+                                                Notícias do mercado
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="emailPromotions">
+                                            <label class="form-check-label" for="emailPromotions">
+                                                Ofertas e promoções
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <h6 class="card-title">
+                                            <i class="fas fa-mobile-alt me-2"></i>
+                                            Notificações Push
+                                        </h6>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="pushPriceAlerts" checked>
+                                            <label class="form-check-label" for="pushPriceAlerts">
+                                                Alertas de preço
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="pushPortfolioUpdates" checked>
+                                            <label class="form-check-label" for="pushPortfolioUpdates">
+                                                Atualizações do portfólio
+                                            </label>
+                                        </div>
+                                        
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="pushSecurity" checked>
+                                            <label class="form-check-label" for="pushSecurity">
+                                                Alertas de segurança
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Salvar Configurações
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Formulário de dados pessoais
+            document.getElementById('personalForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                window.Utils.showNotification('Dados pessoais atualizados com sucesso!', 'success');
+            });
+
+            // Formulário de alteração de senha
+            document.getElementById('passwordForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                if (newPassword !== confirmPassword) {
+                    window.Utils.showNotification('As senhas não coincidem!', 'error');
+                    return;
+                }
+                
+                window.Utils.showNotification('Senha alterada com sucesso!', 'success');
+                this.reset();
+            });
+
+            // Toggle 2FA
+            document.getElementById('twoFactorAuth').addEventListener('change', function() {
+                if (this.checked) {
+                    window.Utils.showNotification('Autenticação 2FA ativada!', 'success');
+                } else {
+                    window.Utils.showNotification('Autenticação 2FA desativada!', 'warning');
+                }
+            });
+
+            // Máscara de telefone
+            document.getElementById('phone').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\\D/g, '');
+                value = value.replace(/(\\d{2})(\\d)/, '($1) $2');
+                value = value.replace(/(\\d{5})(\\d)/, '$1-$2');
+                e.target.value = value;
+            });
+        }
+    </script>
+` }) %> 

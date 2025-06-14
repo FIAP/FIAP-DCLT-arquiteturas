@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fila UOL - Processamento Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .nav-menu a {
+            color: #ff6b35;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .nav-menu a:hover, .nav-menu a.active {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .fila-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .status-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #ff6b35;
+        }
+
+        .config-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #f7931e;
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .uol-logo {
+            width: 32px;
+            height: 32px;
+            background: #ff6b35;
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-processing {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .metric-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .config-title {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .config-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .config-label {
+            color: #666;
+        }
+
+        .config-value {
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        .queue-items {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .queue-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #ff6b35;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .queue-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ff6b35;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .item-title {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-status {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-waiting {
+            background: #e2e3e5;
+            color: #6c757d;
+        }
+
+        .status-processing-item {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b35 0%, #f7931e 100%);
+            transition: width 0.3s ease;
+        }
+
+        .item-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .detail-item {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .processing-log {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .log-container {
+            background: #1a1a1a;
+            color: #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+
+        .log-timestamp {
+            color: #888;
+        }
+
+        .log-level-info {
+            color: #00ff00;
+        }
+
+        .log-level-warn {
+            color: #ffff00;
+        }
+
+        .log-level-error {
+            color: #ff0000;
+        }
+
+        @media (max-width: 768px) {
+            .fila-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .config-items {
+                grid-template-columns: 1fr;
+            }
+            
+            .queue-controls {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Fila UOL - Processamento Portal</h1>
+            <p>Sistema de processamento otimizado para publicação no Portal UOL</p>
+        </div>
+
+        <div class="nav-menu">
+            <a href="/rec-front.html">REC Front</a>
+            <a href="/sistema-grava.html">Sistema Grava</a>
+            <a href="/fila-uol.html" class="active">Fila UOL</a>
+            <a href="/fila-youtube.html">Fila YouTube</a>
+            <a href="/maquina-cortes.html">Máquina Cortes</a>
+            <a href="/filas-rec.html">Filas REC</a>
+            <a href="/monitoramento.html">Monitoramento</a>
+        </div>
+
+        <!-- Dashboard da Fila -->
+        <div class="fila-dashboard">
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <div class="panel-title">
+                    <div class="uol-logo">UOL</div>
+                    Status da Fila
+                </div>
+
+                <div id="fila-status" class="status-indicator status-active">
+                    ● Fila Ativa - Processando
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="total-itens">0</div>
+                        <div class="metric-label">Total na Fila</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="processando">0</div>
+                        <div class="metric-label">Processando</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="concluidos">0</div>
+                        <div class="metric-label">Concluídos</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="erros">0</div>
+                        <div class="metric-label">Erros</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Config Panel -->
+            <div class="config-panel">
+                <div class="panel-title">
+                    Configuração UOL
+                </div>
+
+                <div class="config-section">
+                    <div class="config-title">Especificações de Vídeo</div>
+                    <div class="config-items">
+                        <div class="config-item">
+                            <span class="config-label">Formatos:</span>
+                            <span class="config-value">MP4, WebM</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Resoluções:</span>
+                            <span class="config-value">480p, 720p</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Bitrate:</span>
+                            <span class="config-value">2000k</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Codec:</span>
+                            <span class="config-value">H.264</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <div class="config-title">Otimizações Web</div>
+                    <div class="config-items">
+                        <div class="config-item">
+                            <span class="config-label">Player:</span>
+                            <span class="config-value">HTML5</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Streaming:</span>
+                            <span class="config-value">Progressive</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">CDN:</span>
+                            <span class="config-value">Ativado</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-label">Thumbnail:</span>
+                            <span class="config-value">Auto</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Itens da Fila -->
+        <div class="queue-items">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3>Itens na Fila UOL</h3>
+                <div class="queue-controls">
+                    <button class="btn btn-primary" onclick="pausarFila()">Pausar Fila</button>
+                    <button class="btn btn-secondary" onclick="limparFila()">Limpar Concluídos</button>
+                    <button class="btn btn-success" onclick="atualizarFila()">Atualizar</button>
+                </div>
+            </div>
+
+            <div id="queue-items-container">
+                <div style="text-align: center; color: #666; padding: 40px;">
+                    Nenhum item na fila no momento
+                </div>
+            </div>
+        </div>
+
+        <!-- Log de Processamento -->
+        <div class="processing-log">
+            <h3>Log de Processamento</h3>
+            <div class="log-container" id="processing-log">
+                <div class="log-entry">
+                    <span class="log-timestamp">[00:00:00]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    Sistema UOL inicializado e pronto para processamento
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        
+        let filaItems = [];
+        let filaAtiva = true;
+
+        // Event listeners do Socket.IO
+        socket.on('sistema-status', function(data) {
+            if (data.filas && data.filas.UOL) {
+                atualizarStatusFila(data.filas.UOL);
+            }
+        });
+
+        socket.on('item-atualizado', function(data) {
+            if (data.fila === 'UOL') {
+                atualizarItemFila(data.item);
+                adicionarLog(`Item ${data.item.id.substring(0, 8)}: ${data.item.progresso}% processado`);
+            }
+        });
+
+        socket.on('item-removido', function(data) {
+            if (data.fila === 'UOL') {
+                removerItemFila(data.itemId);
+                adicionarLog(`Item removido da fila UOL`);
+            }
+        });
+
+        function atualizarStatusFila(dadosFila) {
+            const stats = dadosFila.estatisticas;
+            
+            // Atualizar métricas
+            document.getElementById('total-itens').textContent = stats.total;
+            document.getElementById('processando').textContent = stats.processando;
+            document.getElementById('concluidos').textContent = stats.concluidos;
+            document.getElementById('erros').textContent = stats.erros;
+
+            // Atualizar status da fila
+            const statusElement = document.getElementById('fila-status');
+            if (!stats.ativa) {
+                statusElement.className = 'status-indicator status-error';
+                statusElement.textContent = '⏸ Fila Pausada';
+                filaAtiva = false;
+            } else if (stats.processando > 0) {
+                statusElement.className = 'status-indicator status-processing';
+                statusElement.textContent = `⚙ Processando ${stats.processando} item(s)`;
+                filaAtiva = true;
+            } else {
+                statusElement.className = 'status-indicator status-active';
+                statusElement.textContent = '● Fila Ativa - Aguardando';
+                filaAtiva = true;
+            }
+
+            // Atualizar lista de itens
+            filaItems = dadosFila.itens || [];
+            atualizarListaItens();
+        }
+
+        function atualizarItemFila(item) {
+            const index = filaItems.findIndex(i => i.id === item.id);
+            if (index !== -1) {
+                filaItems[index] = item;
+                atualizarListaItens();
+            }
+        }
+
+        function removerItemFila(itemId) {
+            filaItems = filaItems.filter(i => i.id !== itemId);
+            atualizarListaItens();
+        }
+
+        function atualizarListaItens() {
+            const container = document.getElementById('queue-items-container');
+            
+            if (filaItems.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #666; padding: 40px;">
+                        Nenhum item na fila no momento
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filaItems.forEach(item => {
+                const statusConfig = {
+                    'AGUARDANDO': { class: 'status-waiting', text: 'Aguardando' },
+                    'PROCESSANDO': { class: 'status-processing-item', text: 'Processando' },
+                    'CONCLUIDO': { class: 'status-completed', text: 'Concluído' },
+                    'ERRO': { class: 'status-failed', text: 'Erro' }
+                };
+
+                const config = statusConfig[item.status] || statusConfig['AGUARDANDO'];
+                const tempoEstimado = formatarTempo(item.tempoEstimado);
+                const tempoDecorrido = item.dataInicio ? 
+                    Math.floor((new Date() - new Date(item.dataInicio)) / 1000) : 0;
+
+                html += `
+                    <div class="queue-item">
+                        <div class="item-header">
+                            <div class="item-title">
+                                Gravação ID: ${item.gravacaoId.substring(0, 8)}...
+                            </div>
+                            <div class="item-status ${config.class}">
+                                ${config.text}
+                            </div>
+                        </div>
+                        
+                        ${item.status === 'PROCESSANDO' ? `
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${item.progresso}%"></div>
+                            </div>
+                            <div style="text-align: center; font-size: 14px; color: #666;">
+                                ${item.progresso}% - ${formatarTempo(tempoDecorrido)} / ${tempoEstimado}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="item-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Prioridade:</span> ${item.prioridade}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Adicionado:</span> ${formatarDataHora(item.dataAdicao)}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tempo Estimado:</span> ${tempoEstimado}
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Formato:</span> MP4/WebM
+                            </div>
+                            ${item.erro ? `
+                                <div class="detail-item" style="color: #dc3545;">
+                                    <span class="detail-label">Erro:</span> ${item.erro}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        async function pausarFila() {
+            try {
+                const endpoint = filaAtiva ? '/api/filas/UOL/pausar' : '/api/filas/UOL/reativar';
+                const response = await fetch(endpoint, { method: 'POST' });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    adicionarLog(data.mensagem);
+                    
+                    // Atualizar botão
+                    const btn = event.target;
+                    btn.textContent = filaAtiva ? 'Reativar Fila' : 'Pausar Fila';
+                    btn.className = filaAtiva ? 'btn btn-warning' : 'btn btn-primary';
+                }
+            } catch (error) {
+                console.error('Erro ao pausar/reativar fila:', error);
+                adicionarLog('Erro ao alterar status da fila', 'error');
+            }
+        }
+
+        async function limparFila() {
+            try {
+                const response = await fetch('/api/filas/UOL/limpar', { method: 'POST' });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    adicionarLog(data.mensagem);
+                    atualizarFila();
+                }
+            } catch (error) {
+                console.error('Erro ao limpar fila:', error);
+                adicionarLog('Erro ao limpar fila', 'error');
+            }
+        }
+
+        async function atualizarFila() {
+            try {
+                const response = await fetch('/api/filas/UOL');
+                const data = await response.json();
+                
+                if (data.sucesso) {
+                    atualizarStatusFila(data.fila);
+                    adicionarLog('Fila atualizada');
+                }
+            } catch (error) {
+                console.error('Erro ao atualizar fila:', error);
+                adicionarLog('Erro ao atualizar fila', 'error');
+            }
+        }
+
+        function adicionarLog(mensagem, nivel = 'info') {
+            const logContainer = document.getElementById('processing-log');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const nivelClass = {
+                'info': 'log-level-info',
+                'warn': 'log-level-warn',
+                'error': 'log-level-error'
+            }[nivel] || 'log-level-info';
+            
+            const nivelText = {
+                'info': 'INFO',
+                'warn': 'WARN',
+                'error': 'ERROR'
+            }[nivel] || 'INFO';
+            
+            entry.innerHTML = `
+                <span class="log-timestamp">[${timestamp}]</span>
+                <span class="${nivelClass}">[${nivelText}]</span>
+                ${mensagem}
+            `;
+            
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            
+            // Manter apenas os últimos 50 logs
+            while (logContainer.children.length > 50) {
+                logContainer.removeChild(logContainer.firstChild);
+            }
+        }
+
+        function formatarTempo(segundos) {
+            const horas = Math.floor(segundos / 3600);
+            const mins = Math.floor((segundos % 3600) / 60);
+            const secs = segundos % 60;
+            
+            if (horas > 0) {
+                return `${horas}h ${mins}m`;
+            } else if (mins > 0) {
+                return `${mins}m ${secs}s`;
+            } else {
+                return `${secs}s`;
+            }
+        }
+
+        function formatarDataHora(dataString) {
+            const data = new Date(dataString);
+            return data.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            atualizarFila();
+            
+            // Atualizar a cada 10 segundos
+            setInterval(atualizarFila, 10000);
+            
+            // Simular logs de processamento
+            setInterval(() => {
+                if (filaItems.some(item => item.status === 'PROCESSANDO')) {
+                    const logs = [
+                        'Iniciando codificação H.264...',
+                        'Otimizando para reprodução web...',
+                        'Gerando thumbnail automático...',
+                        'Aplicando configurações CDN...',
+                        'Validando qualidade de vídeo...',
+                        'Preparando para upload...'
+                    ];
+                    const randomLog = logs[Math.floor(Math.random() * logs.length)];
+                    adicionarLog(randomLog);
+                }
+            }, 15000);
+        });
+    </script>
+</body>
+</html> 

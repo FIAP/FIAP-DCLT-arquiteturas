@@ -1,0 +1,21 @@
+<%- include('header') %>
+<h2>Meus Candidatos</h2>
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nome</th>
+      <th>Email</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% candidatos.forEach(function(candidato) { %>
+      <tr>
+        <td><%= candidato.id %></td>
+        <td><%= candidato.nome %></td>
+        <td><%= candidato.email %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<%- include('footer') %> 

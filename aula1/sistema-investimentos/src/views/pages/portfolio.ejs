@@ -1,0 +1,473 @@
+<%- include('../layout/base', { body: `
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-0 text-primary">
+                            <i class="fas fa-briefcase me-2"></i>
+                            Meu Portfólio
+                        </h1>
+                        <p class="text-muted mb-0">Análise detalhada dos seus investimentos</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="exportPortfolio()">
+                            <i class="fas fa-download me-2"></i>
+                            Exportar
+                        </button>
+                        <button class="btn btn-primary" onclick="rebalancePortfolio()">
+                            <i class="fas fa-balance-scale me-2"></i>
+                            Rebalancear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumo Geral -->
+        <div class="row g-4 mb-4">
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Valor Total</div>
+                            <div class="widget-value" id="totalValue">R$ 125.480,00</div>
+                            <small class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +R$ 8.240 este mês
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-wallet"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Retorno Total</div>
+                            <div class="widget-value text-success">+18.5%</div>
+                            <small class="text-muted">R$ 19.650 em ganhos</small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Ativos em Carteira</div>
+                            <div class="widget-value">12</div>
+                            <small class="text-info">
+                                <i class="fas fa-eye me-1"></i>
+                                4 em alta hoje
+                            </small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-xl-3 col-md-6">
+                <div class="widget">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="widget-label">Dividendos/Mês</div>
+                            <div class="widget-value">R$ 485,20</div>
+                            <small class="text-muted">Yield médio: 4.8%</small>
+                        </div>
+                        <div class="widget-icon">
+                            <i class="fas fa-hand-holding-usd"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gráficos de Análise -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-area me-2"></i>
+                            Performance do Portfólio
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-end mb-3">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-sm btn-outline-primary active" onclick="changeTimeframe('1m')">1M</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="changeTimeframe('3m')">3M</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="changeTimeframe('6m')">6M</button>
+                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="changeTimeframe('1y')">1A</button>
+                            </div>
+                        </div>
+                        <canvas id="performanceChart" height="100"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>
+                            Alocação por Tipo
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="allocationChart"></canvas>
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Diversificação</span>
+                                <span class="badge bg-success">Ótima</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar bg-success" style="width: 85%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Posições -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>
+                            Posições Detalhadas
+                        </h5>
+                        <div class="d-flex gap-2">
+                            <select class="form-select form-select-sm" id="positionsFilter" style="width: auto;">
+                                <option value="">Todos os tipos</option>
+                                <option value="acao">Ações</option>
+                                <option value="fii">FIIs</option>
+                                <option value="renda_fixa">Renda Fixa</option>
+                            </select>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="refreshPositions()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Ativo</th>
+                                        <th>Quantidade</th>
+                                        <th>Preço Médio</th>
+                                        <th>Preço Atual</th>
+                                        <th>Valor Investido</th>
+                                        <th>Valor Atual</th>
+                                        <th>Resultado</th>
+                                        <th>% Carteira</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="positionsTable">
+                                    <!-- Dados carregados via JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alertas e Recomendações -->
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                            Alertas
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Concentração alta:</strong> 35% do portfólio em ações do setor financeiro.
+                            <a href="#" class="alert-link">Ver sugestões</a>
+                        </div>
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-calendar me-2"></i>
+                            <strong>Dividendos:</strong> R$ 234,50 a receber em 15/01/2025.
+                            <a href="#" class="alert-link">Ver agenda</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-lightbulb me-2 text-success"></i>
+                            Recomendações
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="recommendation-item mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">Diversificar em Renda Fixa</h6>
+                                    <p class="text-muted small mb-1">Considere investir 15% em títulos públicos para reduzir volatilidade.</p>
+                                </div>
+                                <span class="badge bg-success">Alta</span>
+                            </div>
+                        </div>
+                        <div class="recommendation-item mb-3">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">Rebalanceamento</h6>
+                                    <p class="text-muted small mb-1">Reduzir exposição em PETR4 e aumentar em FIIs.</p>
+                                </div>
+                                <span class="badge bg-warning">Média</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/format.js"></script>
+    <script>
+        // Dados simulados das posições
+        const portfolioPositions = [
+            { 
+                symbol: 'PETR4', 
+                name: 'Petrobras', 
+                type: 'acao',
+                quantity: 200, 
+                avgPrice: 28.50, 
+                currentPrice: 32.50, 
+                invested: 5700.00,
+                currentValue: 6500.00,
+                allocation: 5.2
+            },
+            { 
+                symbol: 'VALE3', 
+                name: 'Vale', 
+                type: 'acao',
+                quantity: 150, 
+                avgPrice: 65.20, 
+                currentPrice: 68.20, 
+                invested: 9780.00,
+                currentValue: 10230.00,
+                allocation: 8.1
+            },
+            { 
+                symbol: 'ITUB4', 
+                name: 'Itaú Unibanco', 
+                type: 'acao',
+                quantity: 300, 
+                avgPrice: 26.80, 
+                currentPrice: 28.40, 
+                invested: 8040.00,
+                currentValue: 8520.00,
+                allocation: 6.8
+            },
+            { 
+                symbol: 'HGLG11', 
+                name: 'CSHG Real Estate', 
+                type: 'fii',
+                quantity: 100, 
+                avgPrice: 145.50, 
+                currentPrice: 158.50, 
+                invested: 14550.00,
+                currentValue: 15850.00,
+                allocation: 12.6
+            },
+            { 
+                symbol: 'XPML11', 
+                name: 'XP Malls', 
+                type: 'fii',
+                quantity: 150, 
+                avgPrice: 82.30, 
+                currentPrice: 89.30, 
+                invested: 12345.00,
+                currentValue: 13395.00,
+                allocation: 10.7
+            }
+        ];
+
+        // Dados para gráfico de performance
+        const performanceData = {
+            '1m': {
+                labels: ['01/12', '08/12', '15/12', '22/12', '29/12', '05/01'],
+                data: [117240, 119580, 118920, 122340, 123850, 125480]
+            },
+            '3m': {
+                labels: ['Out', 'Nov', 'Dez', 'Jan'],
+                data: [108500, 115200, 120800, 125480]
+            },
+            '6m': {
+                labels: ['Ago', 'Set', 'Out', 'Nov', 'Dez', 'Jan'],
+                data: [98500, 102300, 108500, 115200, 120800, 125480]
+            },
+            '1y': {
+                labels: ['Jan', 'Mar', 'Mai', 'Jul', 'Set', 'Nov', 'Jan'],
+                data: [85000, 92000, 88500, 95000, 102300, 115200, 125480]
+            }
+        };
+
+        let performanceChart;
+        let allocationChart;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadPositions();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('positionsFilter').addEventListener('change', filterPositions);
+        }
+
+        function initializeCharts() {
+            // Gráfico de Performance
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: performanceData['1m'].labels,
+                    datasets: [{
+                        label: 'Valor do Portfólio',
+                        data: performanceData['1m'].data,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Alocação
+            const allocationCtx = document.getElementById('allocationChart').getContext('2d');
+            allocationChart = new Chart(allocationCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ações', 'FIIs', 'Renda Fixa', 'Criptomoedas'],
+                    datasets: [{
+                        data: [45, 35, 15, 5],
+                        backgroundColor: ['#3498db', '#27ae60', '#f39c12', '#e74c3c'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { usePointStyle: true }
+                        }
+                    }
+                }
+            });
+        }
+
+        function changeTimeframe(period) {
+            // Atualizar botões ativos
+            document.querySelectorAll('.btn-group .btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Atualizar dados do gráfico
+            const data = performanceData[period];
+            performanceChart.data.labels = data.labels;
+            performanceChart.data.datasets[0].data = data.data;
+            performanceChart.update();
+        }
+
+        function loadPositions() {
+            const tbody = document.getElementById('positionsTable');
+            tbody.innerHTML = portfolioPositions.map(position => {
+                const result = position.currentValue - position.invested;
+                const resultPercent = ((result / position.invested) * 100);
+                const resultClass = result >= 0 ? 'text-success' : 'text-danger';
+                const resultIcon = result >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+
+                return '<tr><td><strong>' + position.symbol + '</strong><br><small class="text-muted">' + position.name + '</small></td><td>' + position.quantity + '</td><td>' + formatCurrency(position.avgPrice) + '</td><td>' + formatCurrency(position.currentPrice) + '</td><td>' + formatCurrency(position.invested) + '</td><td>' + formatCurrency(position.currentValue) + '</td><td class="' + resultClass + '"><i class="fas ' + resultIcon + ' me-1"></i>' + formatCurrency(result) + '<br><small>(' + resultPercent.toFixed(1) + '%)</small></td><td>' + position.allocation.toFixed(1) + '%</td><td><div class="btn-group" role="group"><button class="btn btn-sm btn-outline-primary" onclick="buyMore(\'' + position.symbol + '\')"><i class="fas fa-plus"></i></button><button class="btn btn-sm btn-outline-danger" onclick="sellPosition(\'' + position.symbol + '\')"><i class="fas fa-minus"></i></button></div></td></tr>';
+            }).join('');
+        }
+
+        function filterPositions() {
+            const filter = document.getElementById('positionsFilter').value;
+            const filteredPositions = filter ? 
+                portfolioPositions.filter(p => p.type === filter) : 
+                portfolioPositions;
+
+            const tbody = document.getElementById('positionsTable');
+            tbody.innerHTML = filteredPositions.map(position => {
+                const result = position.currentValue - position.invested;
+                const resultPercent = ((result / position.invested) * 100);
+                const resultClass = result >= 0 ? 'text-success' : 'text-danger';
+                const resultIcon = result >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
+
+                return '<tr><td><strong>' + position.symbol + '</strong><br><small class="text-muted">' + position.name + '</small></td><td>' + position.quantity + '</td><td>' + formatCurrency(position.avgPrice) + '</td><td>' + formatCurrency(position.currentPrice) + '</td><td>' + formatCurrency(position.invested) + '</td><td>' + formatCurrency(position.currentValue) + '</td><td class="' + resultClass + '"><i class="fas ' + resultIcon + ' me-1"></i>' + formatCurrency(result) + '<br><small>(' + resultPercent.toFixed(1) + '%)</small></td><td>' + position.allocation.toFixed(1) + '%</td><td><div class="btn-group" role="group"><button class="btn btn-sm btn-outline-primary" onclick="buyMore(\'' + position.symbol + '\')"><i class="fas fa-plus"></i></button><button class="btn btn-sm btn-outline-danger" onclick="sellPosition(\'' + position.symbol + '\')"><i class="fas fa-minus"></i></button></div></td></tr>';
+            }).join('');
+        }
+
+        function refreshPositions() {
+            window.Utils.showNotification('Posições atualizadas', 'success');
+            loadPositions();
+        }
+
+        function buyMore(symbol) {
+            window.Utils.showNotification('Redirecionando para compra de ' + symbol, 'info');
+            // Redirecionar para página de compra
+        }
+
+        function sellPosition(symbol) {
+            if (confirm('Deseja vender parte da posição em ' + symbol + '?')) {
+                window.Utils.showNotification('Ordem de venda criada para ' + symbol, 'success');
+            }
+        }
+
+        function rebalancePortfolio() {
+            window.Utils.showNotification('Análise de rebalanceamento iniciada', 'info');
+            // Implementar lógica de rebalanceamento
+        }
+
+        function exportPortfolio() {
+            window.Utils.showNotification('Exportando relatório do portfólio...', 'info');
+            // Implementar exportação
+        }
+    </script>
+` }) %> 

@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - IDENTITY_SERVICE_URL=http://identity-service:3001
+      - ASSET_SERVICE_URL=http://asset-service:3002
+      - PORTFOLIO_SERVICE_URL=http://portfolio-service:3003
+      - TRANSACTION_SERVICE_URL=http://transaction-service:3004
+      - FINANCIAL_SERVICE_URL=http://financial-service:3005
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3001
+    depends_on:
+      - identity-service
+      - asset-service
+      - portfolio-service
+      - transaction-service
+      - financial-service
+    networks:
+      - microservices-network
+
+  # Identity Service
+  identity-service:
+    build: ./identity-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - JWT_SECRET=sua_chave_jwt_super_secreta_aqui
+      - JWT_EXPIRES_IN=24h
+      - ALLOWED_ORIGINS=http://localhost:3000
+    networks:
+      - microservices-network
+
+  # Asset Service
+  asset-service:
+    build: ./asset-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - ALLOWED_ORIGINS=http://localhost:3000
+    networks:
+      - microservices-network
+
+  # Portfolio Service
+  portfolio-service:
+    build: ./portfolio-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - IDENTITY_SERVICE_URL=http://identity-service:3001
+      - ASSET_SERVICE_URL=http://asset-service:3002
+      - ALLOWED_ORIGINS=http://localhost:3000
+    depends_on:
+      - identity-service
+      - asset-service
+    networks:
+      - microservices-network
+
+  # Transaction Service
+  transaction-service:
+    build: ./transaction-service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - IDENTITY_SERVICE_URL=http://identity-service:3001
+      - ASSET_SERVICE_URL=http://asset-service:3002
+      - PORTFOLIO_SERVICE_URL=http://portfolio-service:3003
+      - FINANCIAL_SERVICE_URL=http://financial-service:3005
+      - ALLOWED_ORIGINS=http://localhost:3000
+    depends_on:
+      - identity-service
+      - asset-service
+      - portfolio-service
+      - financial-service
+    networks:
+      - microservices-network
+
+  # Financial Service
+  financial-service:
+    build: ./financial-service
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - IDENTITY_SERVICE_URL=http://identity-service:3001
+      - ALLOWED_ORIGINS=http://localhost:3000
+    depends_on:
+      - identity-service
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  microservices-data: 
